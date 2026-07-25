@@ -1,0 +1,6 @@
+id=native_tailscale
+name=Native Tailscale TUN
+version=0.2.1-bootstrap
+versionCode=201
+author=Iridule with help from OpenAI
+description=Root-native Android Tailscale using the android-kxxt patched daemon. Tap Action to update upstream binaries safely.

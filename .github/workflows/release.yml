@@ -1,0 +1,41 @@
+name: Publish bootstrap release
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/release.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify release asset
+        run: sha256sum --check SHA256SUMS
+
+      - name: Publish v0.2.1-bootstrap
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.2.1-bootstrap >/dev/null 2>&1; then
+            gh release edit v0.2.1-bootstrap \
+              --title "Native Tailscale TUN v0.2.1-bootstrap" \
+              --notes-file RELEASE_NOTES.md
+            gh release upload v0.2.1-bootstrap \
+              release/native-tailscale-magisk-bootstrap-v0.2.1.zip \
+              SHA256SUMS \
+              --clobber
+            exit 0
+          fi
+
+          gh release create v0.2.1-bootstrap \
+            release/native-tailscale-magisk-bootstrap-v0.2.1.zip \
+            SHA256SUMS \
+            --title "Native Tailscale TUN v0.2.1-bootstrap" \
+            --notes-file RELEASE_NOTES.md
