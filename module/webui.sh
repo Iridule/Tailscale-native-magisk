@@ -67,7 +67,6 @@ status_command() {
     field integrity "$INTEGRITY"
     field interface "$INTERFACE"
     field official_vpn "$OFFICIAL_VPN"
-    field accept_dns "$(json_value "$PREFS_JSON" CorpDNS)"
     field accept_routes "$(json_value "$PREFS_JSON" RouteAll)"
     field shields_up "$(json_value "$PREFS_JSON" ShieldsUp)"
     HOSTNAME_VALUE="$(json_value "$PREFS_JSON" Hostname)"
@@ -96,6 +95,19 @@ set_boolean() {
     "$TAILSCALE" --socket="$SOCKET" set "--$FLAG=$VALUE"
 }
 
+print_login_result() {
+    LOGIN_URL="$(grep -Eo 'https://[^[:space:]]+' "$LOGIN_LOG" 2>/dev/null |
+        head -n 1 |
+        tr -d '\r')"
+    if [ -n "$LOGIN_URL" ]; then
+        printf 'login_url=%s\n' "$LOGIN_URL"
+        echo "Complete authentication in the sign-in page, then return to the dashboard."
+    else
+        cat "$LOGIN_LOG" 2>/dev/null
+        echo "The sign-in URL is not ready yet. Tap Sign in again in a few seconds."
+    fi
+}
+
 case "$1" in
     status)
         if [ "$2" = refresh ] && pid_is_ours; then
@@ -114,6 +126,15 @@ case "$1" in
     diagnostics)
         status_command
         echo
+        echo "Android DNS note"
+        echo "The native Android build cannot read or replace Android's base DNS"
+        echo "configuration through Tailscale's OS DNS configurator. This module keeps"
+        echo "accept-dns disabled because it cannot provide system-wide MagicDNS. If an"
+        echo "older or manual configuration enabled it, the low-severity 'getting OS"
+        echo "base config is not supported' warning does not mean TUN or tailnet IP"
+        echo "routing failed. The native daemon continues using Android's existing DNS."
+        echo
+        echo "Raw Tailscale status"
         "$TAILSCALE" --socket="$SOCKET" status 2>&1 || true
         echo
         ip addr show tailscale0 2>&1 || true
@@ -143,12 +164,13 @@ case "$1" in
         LOGIN_PIDFILE="$BASE/webui-login.pid"
         LOGIN_PID="$(cat "$LOGIN_PIDFILE" 2>/dev/null)"
         if [ -n "$LOGIN_PID" ] && kill -0 "$LOGIN_PID" 2>/dev/null; then
-            cat "$LOGIN_LOG" 2>/dev/null
+            print_login_result
             exit 0
         fi
         : > "$LOGIN_LOG"
         DEVICE_HOSTNAME="$(android_device_hostname)"
         nohup "$TAILSCALE" --socket="$SOCKET" up --hostname="$DEVICE_HOSTNAME" \
+            --accept-dns=false \
             > "$LOGIN_LOG" 2>&1 &
         echo "$!" > "$LOGIN_PIDFILE"
         I=0
@@ -156,16 +178,7 @@ case "$1" in
             sleep 1
             I=$((I + 1))
         done
-        LOGIN_URL="$(grep -Eo 'https://[^[:space:]]+' "$LOGIN_LOG" 2>/dev/null |
-            head -n 1 |
-            tr -d '\r')"
-        if [ -n "$LOGIN_URL" ]; then
-            printf 'login_url=%s\n' "$LOGIN_URL"
-            echo "Complete authentication in the sign-in page, then return to the dashboard."
-        else
-            cat "$LOGIN_LOG" 2>/dev/null
-            echo "The sign-in URL is not ready yet. Tap Sign in again in a few seconds."
-        fi
+        print_login_result
         ;;
     verify)
         if verify_binary_hashes; then
@@ -180,9 +193,19 @@ case "$1" in
     binary-update)
         exec "$MODDIR/action.sh" binary-update
         ;;
+    open-admin)
+        ADMIN_URL=https://console.tailscale.com/admin/machines
+        if am start -a android.intent.action.VIEW -d "$ADMIN_URL" \
+            >/dev/null 2>&1
+        then
+            echo "Opened the Tailscale Machines page in your browser."
+        else
+            echo "ERROR: No browser could open the Tailscale admin console."
+            exit 1
+        fi
+        ;;
     set)
         case "$2" in
-            accept-dns) set_boolean accept-dns "$3" ;;
             accept-routes) set_boolean accept-routes "$3" ;;
             shields-up) set_boolean shields-up "$3" ;;
             hostname)
@@ -204,7 +227,7 @@ case "$1" in
         esac
         ;;
     *)
-        echo "Usage: $0 {status|logs|clear-logs|diagnostics|start|stop|restart|login|verify|binary-update|set}"
+        echo "Usage: $0 {status|logs|clear-logs|diagnostics|start|stop|restart|login|verify|binary-update|open-admin|set}"
         exit 2
         ;;
 esac

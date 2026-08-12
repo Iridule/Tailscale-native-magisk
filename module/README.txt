@@ -1,4 +1,4 @@
-Native Tailscale TUN — Magisk bootstrap module v0.4.3
+Native Tailscale TUN — Magisk bootstrap module v0.4.4
 
 PURPOSE
 Runs the android-kxxt patched tailscaled daemon as a root-native TUN service,
@@ -32,6 +32,12 @@ Install KsuWebUIStandalone on Magisk to open the bundled dashboard. It shows
 connection and integrity status, exposes safe Tailscale preferences, controls
 the native service, verifies installed binaries, and displays recent logs. The
 sign-in result includes both a tappable link and the full selectable URL.
+Repeated Sign in taps reuse the same pending authentication link. Diagnostics
+explains the expected native Android DNS health warning; updater results omit
+that warning and show a concise live connection summary instead.
+The native Android build cannot install system-wide MagicDNS, so the module
+keeps accept-dns disabled and leaves Android's existing DNS untouched.
+Tailnet Admin opens the official Tailscale Machines page in the normal browser.
 Magisk handles module update notifications. The dashboard handles login and
 manual Tailscale binary updates.
 
@@ -39,7 +45,8 @@ SECURITY NOTE
 The upstream repository currently publishes raw prebuilts without signed
 releases or a signed checksum manifest. The updater therefore trusts HTTPS,
 GitHub, and the android-kxxt repository. Updates are manual, never automatic
-at boot. Review upstream changes before pressing Action if this is a concern.
+at boot. Review upstream changes before selecting Update Tailscale if this is
+a concern.
 
 STATE AND UNINSTALL
 Uninstalling stops the daemon but intentionally preserves:

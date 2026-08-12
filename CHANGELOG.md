@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.4-bootstrap — 2026-08-12
+
+- Return pending authentication URLs through the same `login_url=` WebUI
+  protocol as new login attempts, keeping the clickable sign-in control on
+  repeated taps.
+- Replace raw `tailscale status` output in the binary updater with a concise
+  live state, IP, hostname, and TUN summary.
+- Explain the native Android no-op OS DNS configurator and its expected
+  low-severity base-DNS warning in Diagnostics.
+- Remove the ineffective Tailscale DNS switch and keep `accept-dns=false`
+  during daemon startup and dashboard login, leaving Android's existing DNS
+  untouched.
+- Add an allowlisted Tailnet Admin action that opens the official Tailscale
+  Machines page in the device's normal browser.
+
 ## 0.4.3-bootstrap — 2026-08-12
 
 - Restyle the offline dashboard with a responsive cyber-terminal interface,

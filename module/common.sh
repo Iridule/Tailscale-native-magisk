@@ -46,6 +46,18 @@ official_tailscale_vpn_active() {
         grep -Fq "VPN:com.tailscale.ipn"
 }
 
+disable_unsupported_android_dns() {
+    [ -x "$MODDIR/bin/tailscale" ] || return 1
+    DNS_I=0
+    while [ "$DNS_I" -lt 5 ]; do
+        "$MODDIR/bin/tailscale" --socket="$SOCKET" set \
+            --accept-dns=false >/dev/null 2>&1 && return 0
+        sleep 1
+        DNS_I=$((DNS_I + 1))
+    done
+    return 1
+}
+
 legacy_pid_list() {
     for P in $(pidof tailscaled 2>/dev/null); do
         [ -r "/proc/$P/cmdline" ] || continue
@@ -106,6 +118,7 @@ stop_daemon() {
 
 start_daemon() {
     if pid_is_ours; then
+        disable_unsupported_android_dns || true
         return 0
     fi
 
@@ -132,6 +145,10 @@ start_daemon() {
     I=0
     while [ "$I" -lt 20 ]; do
         if [ -S "$SOCKET" ] && pid_is_ours; then
+            if ! disable_unsupported_android_dns; then
+                echo "$(date): could not disable unsupported native Android DNS preference" \
+                    >> "$LOGFILE"
+            fi
             return 0
         fi
         sleep 1

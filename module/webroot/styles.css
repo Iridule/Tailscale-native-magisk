@@ -281,6 +281,7 @@ input[type="checkbox"]:disabled { opacity: .4; cursor: not-allowed; }
 .hostname-row > div { display: flex; gap: 8px; margin-top: 10px; }
 .hostname-row input { min-width: 0; flex: 1; padding: 11px 12px; border: 1px solid #2b4655; border-radius: 6px; background: #050a11; color: var(--cyan); font: inherit; font-size: 11px; }
 .control-grid button { min-height: 49px; }
+.control-grid [data-action="open-admin"] { grid-column: 1 / -1; }
 
 .logs-card { padding: 0; border-color: rgba(60, 255, 114, .72); box-shadow: inset 0 0 22px rgba(60, 255, 114, .045), 0 0 14px rgba(60, 255, 114, .07); }
 .logs-card::after { border-color: var(--green); }

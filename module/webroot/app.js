@@ -119,6 +119,7 @@ async function runAction(action, title) {
   try {
     const output = await execHelper(action);
     if (action === "login") showLoginOutput(output);
+    else if (action === "open-admin") { /* Browser opened by the allowlisted helper. */ }
     else showOutput(title, output);
   } catch (error) {
     showOutput(`${title} failed`, error.message);
@@ -132,7 +133,7 @@ async function runAction(action, title) {
 $("#refresh").addEventListener("click", () => refreshStatus(true));
 $("#closeDialog").addEventListener("click", () => $("#outputDialog").close());
 $$('[data-action]').forEach((button) => button.addEventListener("click", () => {
-  const labels = { start: "Starting service", stop: "Stopping service", restart: "Restarting service", login: "Tailscale sign in", verify: "Verifying binaries", "binary-update": "Updating Tailscale binaries", "clear-logs": "Clearing daemon log", diagnostics: "Diagnostics" };
+  const labels = { start: "Starting service", stop: "Stopping service", restart: "Restarting service", login: "Tailscale sign in", verify: "Verifying binaries", "binary-update": "Updating Tailscale binaries", "open-admin": "Opening Tailnet Admin", "clear-logs": "Clearing daemon log", diagnostics: "Diagnostics" };
   runAction(button.dataset.action, labels[button.dataset.action] || button.dataset.action);
 }));
 
