@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.6-bootstrap — 2026-08-12
+
+- Read an authentication URL directly from the live daemon status before
+  starting or consulting a background login command.
+- Ignore stale or recycled login PIDs unless `/proc` confirms that they belong
+  to this module's exact `tailscale up` process.
+- Stop orphaned login commands and clear their PID metadata whenever the daemon
+  is stopped or freshly started.
+- Prevent an old login log from replaying the incomplete-flags error after the
+  daemon has already generated a valid sign-in URL.
+- Retain bare `tailscale up` as the fallback, preserving every existing
+  non-default preference.
+
 ## 0.4.5-bootstrap — 2026-08-12
 
 - Recover saved sessions automatically after Start or Restart, including after

@@ -6,6 +6,7 @@ SOCKET="$BASE/tailscaled.sock"
 STATE="$BASE/tailscaled.state"
 PIDFILE="$BASE/tailscaled.pid"
 LOGFILE="$BASE/tailscaled.log"
+LOGIN_PIDFILE="$BASE/webui-login.pid"
 
 mkdir -p "$BASE"
 chmod 0700 "$BASE"
@@ -93,7 +94,22 @@ stop_legacy_daemon() {
     rm -f "$PIDFILE" "$SOCKET"
 }
 
+stop_pending_login() {
+    LOGIN_PID="$(cat "$LOGIN_PIDFILE" 2>/dev/null)"
+    if [ -n "$LOGIN_PID" ] && [ -r "/proc/$LOGIN_PID/cmdline" ]; then
+        LOGIN_CMD="$(tr '\000' ' ' < "/proc/$LOGIN_PID/cmdline" 2>/dev/null)"
+        case "$LOGIN_CMD" in
+            *"$MODDIR/bin/tailscale"*"--socket=$SOCKET"*" up"*)
+                kill "$LOGIN_PID" 2>/dev/null || true
+                ;;
+        esac
+    fi
+    rm -f "$LOGIN_PIDFILE"
+}
+
 stop_daemon() {
+    stop_pending_login
+
     if ! pid_is_ours; then
         rm -f "$PIDFILE" "$SOCKET"
         return 0
@@ -127,6 +143,8 @@ start_daemon() {
             >> "$LOGFILE"
         return 1
     fi
+
+    stop_pending_login
 
     [ -x "$MODDIR/bin/tailscaled" ] || return 1
     rm -f "$PIDFILE" "$SOCKET"
