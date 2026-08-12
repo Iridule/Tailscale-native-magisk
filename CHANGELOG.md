@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.3-bootstrap — 2026-08-12
+
+- Restyle the offline dashboard with a responsive cyber-terminal interface,
+  high-contrast connection matrix, and explicit ON/OFF switches.
+- Keep all fonts, icons, scripts, and visual effects local to the module.
+- Respect the device's reduced-motion accessibility setting.
+- Show Tailscale authentication as a large tappable link and repeat the full,
+  selectable URL underneath as a copy-and-paste fallback.
+- Preserve the tested helper allowlist, live status, integrity, service,
+  settings, updater, and real daemon-log behavior beneath the new design.
+
 ## 0.4.2-bootstrap — 2026-08-12
 
 - Make Magisk Action exclusively launch the KsuWebUIStandalone dashboard.
