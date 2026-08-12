@@ -1,40 +1,45 @@
-# Native Tailscale TUN v0.4.5-bootstrap
+# Native Tailscale TUN v0.4.6-bootstrap
 
-This maintenance release fixes misleading authentication prompts while the
-native daemon restores an existing session after Start, Restart, or an abrupt
-process kill.
+This maintenance release repairs dashboard login when the daemon has already
+generated an authentication URL but an older background-login result remains
+in the persistent module state.
+
+## Root cause
+
+The daemon was successfully reaching Tailscale and producing a valid
+authentication URL. The dashboard checked a stored login PID and log before it
+checked that live URL. A stale or recycled PID could therefore replay an old
+`tailscale up` incomplete-flags error instead of presenting the current link.
 
 ## Changes
 
-- Start and Restart now retry the same fresh network-map request used by the
-  dashboard refresh button while the replacement daemon settles.
-- Temporary `NeedsLogin` and `NoState` startup states display **Restoring** and
-  cannot launch an unnecessary login attempt.
-- Connected devices display a green **Signed in** state.
-- Genuine authentication uses a bare `tailscale up`, preserving all existing
-  non-default Tailscale preferences and avoiding the incomplete-flags error.
-- Login checks live state and reports when the saved session has already
-  recovered.
-- Dashboard cards no longer have an inconsistent accent-colored lower corner.
+- Live daemon `AuthURL` is now the first source for the clickable sign-in link.
+- Login PIDs are trusted only when `/proc` identifies the exact module-owned
+  `tailscale up` process.
+- Stop, Start, and Restart clean up orphaned background login commands.
+- Stale login output can no longer override a live URL or Running state.
+- The fallback remains a bare `tailscale up`, preserving subnet-route,
+  shields-up, hostname, DNS, and other non-default preferences.
 
 ## Validation
 
-- Shell syntax checks pass for all module scripts.
-- JavaScript syntax and whitespace checks pass.
-- The mobile WebUI regression covers Start and Restart transitions through
-  `NeedsLogin` to `Running`, the disabled Restoring state, genuine login, and
-  the final Signed in state.
+- A mocked live `NeedsLogin` status returns its clickable URL without running
+  another login command.
+- A live `Running` status reports that the device is already signed in.
+- A stale PID and old error log are ignored, and the fallback invokes exactly
+  bare `tailscale up`.
+- Shell syntax, JavaScript syntax, mobile WebUI regression, archive comparison,
+  and release checksum checks pass.
 
 ## Important
 
 - ARM64 only.
+- Reboot after installing so Magisk activates every updated module script.
 - Disconnect the official Android Tailscale app before using the native daemon.
-- The ZIP downloads the current patched binaries during installation; it does
-  not bundle them.
 - Existing identity under `/data/adb/tailscale-native` remains preserved.
 
 ## SHA-256
 
 ```text
-1191babf3fe5166116a6604e5f4f7e52c80678fc137f75bf167e2163e42805f0
+82e53e0326c30c4efec6b629b30abc2cfeafdf99fd71108b205020ab7a1efe1e
 ```

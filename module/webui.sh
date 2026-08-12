@@ -4,6 +4,8 @@ MODDIR=${0%/*}
 . "$MODDIR/common.sh"
 
 TAILSCALE="$MODDIR/bin/tailscale"
+LOGIN_LOG="$BASE/webui-login.log"
+LOGIN_PIDFILE="$BASE/webui-login.pid"
 
 field() {
     printf '%s=%s\n' "$1" "$2"
@@ -95,27 +97,62 @@ set_boolean() {
     "$TAILSCALE" --socket="$SOCKET" set "--$FLAG=$VALUE"
 }
 
+print_login_url() {
+    case "$1" in
+        https://*) ;;
+        *) return 1 ;;
+    esac
+
+    printf 'login_url=%s\n' "$1"
+    echo "Complete authentication in the sign-in page, then return to the dashboard."
+}
+
+print_live_login_result() {
+    LOGIN_STATUS_JSON="$($TAILSCALE --socket="$SOCKET" status --json 2>/dev/null)"
+    LOGIN_STATE="$(json_value "$LOGIN_STATUS_JSON" BackendState)"
+    LOGIN_URL="$(json_value "$LOGIN_STATUS_JSON" AuthURL)"
+
+    if print_login_url "$LOGIN_URL"; then
+        return 0
+    fi
+
+    if [ "$LOGIN_STATE" = Running ]; then
+        echo "This device is already signed in."
+        return 0
+    fi
+
+    return 1
+}
+
+login_process_is_ours() {
+    LOGIN_PID="$(cat "$LOGIN_PIDFILE" 2>/dev/null)"
+    if [ -n "$LOGIN_PID" ] && [ -r "/proc/$LOGIN_PID/cmdline" ]; then
+        LOGIN_CMD="$(tr '\000' ' ' < "/proc/$LOGIN_PID/cmdline" 2>/dev/null)"
+        case "$LOGIN_CMD" in
+            *"$TAILSCALE"*"--socket=$SOCKET"*" up"*) return 0 ;;
+        esac
+    fi
+
+    rm -f "$LOGIN_PIDFILE"
+    return 1
+}
+
 print_login_result() {
+    if print_live_login_result; then
+        return 0
+    fi
+
     LOGIN_URL="$(grep -Eo 'https://[^[:space:]]+' "$LOGIN_LOG" 2>/dev/null |
         head -n 1 |
         tr -d '\r')"
-    if [ -n "$LOGIN_URL" ]; then
-        printf 'login_url=%s\n' "$LOGIN_URL"
-        echo "Complete authentication in the sign-in page, then return to the dashboard."
-    elif [ "$(login_backend_state)" = Running ]; then
-        echo "This device is already signed in."
+    if print_login_url "$LOGIN_URL"; then
+        return 0
     else
         cat "$LOGIN_LOG" 2>/dev/null
-        RESULT_PID="$(cat "$LOGIN_PIDFILE" 2>/dev/null)"
-        if [ -n "$RESULT_PID" ] && kill -0 "$RESULT_PID" 2>/dev/null; then
+        if login_process_is_ours; then
             echo "The sign-in URL is not ready yet. Tap Sign in again in a few seconds."
         fi
     fi
-}
-
-login_backend_state() {
-    LOGIN_STATUS_JSON="$($TAILSCALE --socket="$SOCKET" status --json 2>/dev/null)"
-    json_value "$LOGIN_STATUS_JSON" BackendState
 }
 
 case "$1" in
@@ -170,17 +207,14 @@ case "$1" in
         ;;
     login)
         require_running
-        if [ "$(login_backend_state)" = Running ]; then
-            echo "This device is already signed in."
+        if print_live_login_result; then
             exit 0
         fi
-        LOGIN_LOG="$BASE/webui-login.log"
-        LOGIN_PIDFILE="$BASE/webui-login.pid"
-        LOGIN_PID="$(cat "$LOGIN_PIDFILE" 2>/dev/null)"
-        if [ -n "$LOGIN_PID" ] && kill -0 "$LOGIN_PID" 2>/dev/null; then
+        if login_process_is_ours; then
             print_login_result
             exit 0
         fi
+        rm -f "$LOGIN_PIDFILE"
         : > "$LOGIN_LOG"
         disable_unsupported_android_dns || true
         ensure_device_hostname || true
@@ -189,7 +223,9 @@ case "$1" in
         echo "$!" > "$LOGIN_PIDFILE"
         I=0
         while [ ! -s "$LOGIN_LOG" ] && [ "$I" -lt 8 ]; do
-            [ "$(login_backend_state)" = Running ] && break
+            if print_live_login_result; then
+                exit 0
+            fi
             sleep 1
             I=$((I + 1))
         done
