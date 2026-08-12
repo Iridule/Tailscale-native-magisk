@@ -1,7 +1,7 @@
 id=native_tailscale
 name=Native Tailscale TUN
-version=0.4.0-bootstrap
-versionCode=400
+version=0.4.1-bootstrap
+versionCode=401
 author=Iridule with help from OpenAI
 description=Root-native Android Tailscale with Action login, verified updates, and a KsuWebUIStandalone dashboard.
 updateJson=https://raw.githubusercontent.com/Iridule/Tailscale-native-magisk/main/update.json

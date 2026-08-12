@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.1-bootstrap — 2026-08-12
+
+- Open this module directly in KsuWebUIStandalone when Magisk Action detects
+  that authentication is required.
+- Replace terminal QR output with a tappable authentication button inside the
+  dashboard.
+- Keep `tailscale up` running in the background while browser authentication
+  completes.
+- Fall back to printing the plain authentication URL when KsuWebUIStandalone
+  is not installed or cannot be opened.
+- Derive fresh node names from Android's configured device name, Bluetooth
+  name, product market name, or model instead of using `node`/`localhost`.
+- Prefill the dashboard hostname with that derived device name while retaining
+  the manual hostname control.
+
 ## 0.4.0-bootstrap — 2026-08-12
 
 - Add an offline dashboard for Magisk users running KsuWebUIStandalone.

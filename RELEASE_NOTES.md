@@ -1,7 +1,6 @@
-# Native Tailscale TUN v0.4.0-bootstrap
+# Native Tailscale TUN v0.4.1-bootstrap
 
-This release adds an optional dashboard for Magisk + KsuWebUIStandalone and
-strengthens installed-binary integrity checking.
+This release fixes authentication from the Magisk Action screen and dashboard.
 
 ## What it does
 
@@ -24,6 +23,11 @@ The bundled `webroot` targets KsuWebUIStandalone running on Magisk. All assets
 are packaged locally; no external fonts, scripts, analytics, or trackers are
 loaded.
 
+When authentication is required, Magisk Action now opens this module directly
+in KsuWebUIStandalone. The dashboard presents a tappable Tailscale sign-in
+button instead of terminal QR output. If the WebUI cannot be opened, Action
+falls back to printing Tailscale's plain authentication URL.
+
 ## Important
 
 - ARM64 only.
@@ -38,5 +42,5 @@ loaded.
 ## SHA-256
 
 ```text
-d62a75123650a008a034d3a6717b4fd73e01a2e5727de69f23df7260233a309b
+44cf94c0fd3df5fc10bc7742055ca7cbd3f4e1163a514c64df8669f1efc47d64
 ```

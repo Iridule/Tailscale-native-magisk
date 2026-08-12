@@ -182,3 +182,32 @@ verify_binary_hashes() {
     [ -s "$MODDIR/binary-sha256" ] || return 1
     (cd "$MODDIR" && sha256sum -c binary-sha256 >/dev/null 2>&1)
 }
+
+android_device_hostname() {
+    DEVICE_NAME="$(settings get global device_name 2>/dev/null)"
+    [ -n "$DEVICE_NAME" ] && [ "$DEVICE_NAME" != null ] ||
+        DEVICE_NAME="$(settings get secure bluetooth_name 2>/dev/null)"
+    [ -n "$DEVICE_NAME" ] && [ "$DEVICE_NAME" != null ] ||
+        DEVICE_NAME="$(getprop ro.product.marketname 2>/dev/null)"
+    [ -n "$DEVICE_NAME" ] ||
+        DEVICE_NAME="$(getprop ro.product.model 2>/dev/null)"
+    [ -n "$DEVICE_NAME" ] || DEVICE_NAME=android-device
+
+    printf '%s\n' "$DEVICE_NAME" |
+        tr '[:upper:]' '[:lower:]' |
+        sed 's/[^a-z0-9.-]/-/g; s/--*/-/g; s/^[.-]*//; s/[.-]*$//' |
+        cut -c1-63
+}
+
+ensure_device_hostname() {
+    [ -x "$MODDIR/bin/tailscale" ] || return 1
+    PREFS_JSON="$("$MODDIR/bin/tailscale" --socket="$SOCKET" debug prefs 2>/dev/null)"
+    CONFIGURED_HOSTNAME="$(printf '%s\n' "$PREFS_JSON" |
+        sed -n 's/.*"Hostname"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' |
+        head -n 1)"
+    [ -z "$CONFIGURED_HOSTNAME" ] || return 0
+    DEVICE_HOSTNAME="$(android_device_hostname)"
+    [ -n "$DEVICE_HOSTNAME" ] || return 1
+    "$MODDIR/bin/tailscale" --socket="$SOCKET" set \
+        --hostname="$DEVICE_HOSTNAME" >/dev/null 2>&1
+}

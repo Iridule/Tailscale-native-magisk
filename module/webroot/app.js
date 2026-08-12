@@ -71,7 +71,7 @@ function renderStatus(data) {
 
   if (bool(data.official_vpn)) showAlert("The official Tailscale Android VPN is active. Disconnect it before starting the native daemon.");
   else if (data.integrity === "modified") showAlert("Binary integrity check failed. Updates are blocked until the installation is reviewed.", "bad");
-  else if (/NeedsLogin|NoState/.test(state)) showAlert("This device needs authentication. Tap Sign in to display the login URL or QR code.");
+  else if (/NeedsLogin|NoState/.test(state)) showAlert("This device needs authentication. Tap Sign in to open the Tailscale authentication page.");
   else showAlert("");
 }
 
@@ -92,14 +92,29 @@ function setBusy(enabled, text = "Working…") {
 function showOutput(title, output) {
   $("#dialogTitle").textContent = title;
   $("#dialogOutput").textContent = output || "Completed successfully.";
+  $("#loginLink").classList.add("hidden");
+  $("#loginLink").removeAttribute("href");
   $("#outputDialog").showModal();
+}
+
+function showLoginOutput(output) {
+  const match = String(output).match(/^login_url=(https:\/\/\S+)/m);
+  if (!match) {
+    showOutput("Tailscale sign in", output);
+    return;
+  }
+  const message = String(output).replace(/^login_url=.*(?:\r?\n)?/m, "").trim();
+  showOutput("Tailscale sign in", message || "Open the authentication page, finish signing in, then return here.");
+  $("#loginLink").href = match[1];
+  $("#loginLink").classList.remove("hidden");
 }
 
 async function runAction(action, title) {
   setBusy(true, `${title}…`);
   try {
     const output = await execHelper(action);
-    showOutput(title, output);
+    if (action === "login") showLoginOutput(output);
+    else showOutput(title, output);
   } catch (error) {
     showOutput(`${title} failed`, error.message);
   } finally {

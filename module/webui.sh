@@ -74,7 +74,12 @@ status_command() {
     field accept_dns "$(json_value "$PREFS_JSON" CorpDNS)"
     field accept_routes "$(json_value "$PREFS_JSON" RouteAll)"
     field shields_up "$(json_value "$PREFS_JSON" ShieldsUp)"
-    field hostname "$(json_value "$PREFS_JSON" Hostname)"
+    HOSTNAME_VALUE="$(json_value "$PREFS_JSON" Hostname)"
+    [ -n "$HOSTNAME_VALUE" ] || HOSTNAME_VALUE="$(json_value "$STATUS_JSON" HostName)"
+    case "$HOSTNAME_VALUE" in
+        ""|localhost|node) HOSTNAME_VALUE="$(android_device_hostname)" ;;
+    esac
+    field hostname "$HOSTNAME_VALUE"
 }
 
 require_running() {
@@ -138,7 +143,8 @@ case "$1" in
             exit 0
         fi
         : > "$LOGIN_LOG"
-        nohup "$TAILSCALE" --socket="$SOCKET" up --qr --qr-format=small \
+        DEVICE_HOSTNAME="$(android_device_hostname)"
+        nohup "$TAILSCALE" --socket="$SOCKET" up --hostname="$DEVICE_HOSTNAME" \
             > "$LOGIN_LOG" 2>&1 &
         echo "$!" > "$LOGIN_PIDFILE"
         I=0
@@ -146,7 +152,16 @@ case "$1" in
             sleep 1
             I=$((I + 1))
         done
-        cat "$LOGIN_LOG" 2>/dev/null
+        LOGIN_URL="$(grep -Eo 'https://[^[:space:]]+' "$LOGIN_LOG" 2>/dev/null |
+            head -n 1 |
+            tr -d '\r')"
+        if [ -n "$LOGIN_URL" ]; then
+            printf 'login_url=%s\n' "$LOGIN_URL"
+            echo "Complete authentication in the sign-in page, then return to the dashboard."
+        else
+            cat "$LOGIN_LOG" 2>/dev/null
+            echo "The sign-in URL is not ready yet. Tap Sign in again in a few seconds."
+        fi
         ;;
     verify)
         if verify_binary_hashes; then
