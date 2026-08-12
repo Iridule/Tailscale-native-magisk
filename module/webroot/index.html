@@ -40,7 +40,8 @@
         <div><span>Daemon PID</span><strong id="pid">—</strong></div>
       </div>
       <div class="button-row">
-        <button class="primary" data-action="verify"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 2.8 8.2 7 10 4.2-1.8 7-5.3 7-10V6l-7-3Z"/></svg>Verify installed binaries</button>
+        <button class="secondary" data-action="verify"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 2.8 8.2 7 10 4.2-1.8 7-5.3 7-10V6l-7-3Z"/></svg>Verify binaries</button>
+        <button class="primary" data-action="binary-update"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Update Tailscale</button>
       </div>
     </section>
 
@@ -69,9 +70,9 @@
     </section>
 
     <details class="card logs-card">
-      <summary><span class="section-icon terminal"><svg viewBox="0 0 24 24"><path d="m5 7 4 5-4 5M11 17h8"/></svg></span><span class="grow"><strong>Logs and diagnostics</strong><small>Recent daemon activity</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary>
+      <summary><span class="section-icon terminal"><svg viewBox="0 0 24 24"><path d="m5 7 4 5-4 5M11 17h8"/></svg></span><span class="grow"><strong>Logs and diagnostics</strong><small>Historical activity—not current login state</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary>
       <pre id="logs">Open this section to load logs.</pre>
-      <div class="button-row"><button class="secondary" id="loadLogs">Refresh logs</button><button class="secondary" data-action="diagnostics">Run diagnostics</button></div>
+      <div class="button-row"><button class="secondary" id="loadLogs">Refresh logs</button><button class="secondary" data-action="clear-logs">Clear log</button><button class="secondary" data-action="diagnostics">Run diagnostics</button></div>
     </details>
 
     <footer><span class="dot"></span> Local, offline interface for Magisk + KsuWebUIStandalone</footer>

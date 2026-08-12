@@ -175,7 +175,7 @@ record_binary_hashes() {
         cd "$MODDIR" || exit 1
         sha256sum bin/tailscale bin/tailscaled > binary-sha256
         chmod 0600 binary-sha256
-    )
+    ) && printf '%s\n' verified > "$BASE/last-integrity-status"
 }
 
 verify_binary_hashes() {

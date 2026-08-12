@@ -1,6 +1,7 @@
-# Native Tailscale TUN v0.4.1-bootstrap
+# Native Tailscale TUN v0.4.2-bootstrap
 
-This release fixes authentication from the Magisk Action screen and dashboard.
+This release simplifies Action behavior, speeds up status refresh, and makes
+the difference between historical logs and current authentication explicit.
 
 ## What it does
 
@@ -13,7 +14,9 @@ This release fixes authentication from the Magisk Action screen and dashboard.
 - Provides login, service, integrity, log, and diagnostic controls.
 - Records installed binary SHA-256 hashes and blocks updates after unexpected
   modification.
-- Retains the Magisk Action login and updater as a fallback.
+- Makes Magisk Action exclusively open the dashboard.
+- Moves Tailscale binary updates into the dashboard.
+- Adds log clearing and faster status refresh.
 - Uses Magisk's built-in update notification mechanism for module releases.
 - Rechecks the upstream source marker after downloads to reject mixed updates.
 
@@ -23,10 +26,8 @@ The bundled `webroot` targets KsuWebUIStandalone running on Magisk. All assets
 are packaged locally; no external fonts, scripts, analytics, or trackers are
 loaded.
 
-When authentication is required, Magisk Action now opens this module directly
-in KsuWebUIStandalone. The dashboard presents a tappable Tailscale sign-in
-button instead of terminal QR output. If the WebUI cannot be opened, Action
-falls back to printing Tailscale's plain authentication URL.
+Magisk Action opens this module directly in KsuWebUIStandalone. The dashboard
+presents a tappable Tailscale sign-in button instead of terminal QR output.
 
 ## Important
 
@@ -42,5 +43,5 @@ falls back to printing Tailscale's plain authentication URL.
 ## SHA-256
 
 ```text
-44cf94c0fd3df5fc10bc7742055ca7cbd3f4e1163a514c64df8669f1efc47d64
+03106f2413930bb9b2f06b6243ae3d9855c39ea314093504719c4d519a72bda5
 ```

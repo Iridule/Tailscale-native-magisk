@@ -66,6 +66,6 @@ STATUS_JSON="$("$MODDIR/bin/tailscale" --socket="$SOCKET" status --json 2>/dev/n
 if printf '%s\n' "$STATUS_JSON" |
     grep -Eq '"BackendState"[[:space:]]*:[[:space:]]*"(NeedsLogin|NoState)"'
 then
-    echo "$(date): authentication required; open Magisk and tap the module Action button" \
+    echo "$(date): authentication required; sign in from the Native Tailscale dashboard" \
         >> "$LOGFILE"
 fi

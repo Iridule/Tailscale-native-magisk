@@ -46,14 +46,10 @@ status_command() {
     MODULE_VERSION="$(sed -n 's/^version=//p' "$MODDIR/module.prop" | head -n 1)"
     COMMIT="$(tr -d '\r\n ' < "$MODDIR/upstream_commit" 2>/dev/null)"
 
-    INTEGRITY=unrecorded
-    if [ -s "$MODDIR/binary-sha256" ]; then
-        if verify_binary_hashes; then
-            INTEGRITY=verified
-        else
-            INTEGRITY=modified
-        fi
-    fi
+    INTEGRITY="$(cat "$BASE/last-integrity-status" 2>/dev/null)"
+    [ -n "$INTEGRITY" ] || {
+        [ -s "$MODDIR/binary-sha256" ] && INTEGRITY=recorded || INTEGRITY=unrecorded
+    }
 
     INTERFACE=down
     ip link show tailscale0 >/dev/null 2>&1 && INTERFACE=up
@@ -102,10 +98,18 @@ set_boolean() {
 
 case "$1" in
     status)
+        if [ "$2" = refresh ] && pid_is_ours; then
+            "$TAILSCALE" --socket="$SOCKET" debug force-netmap-update \
+                >/dev/null 2>&1 || true
+        fi
         status_command
         ;;
     logs)
         tail -n 120 "$LOGFILE" 2>/dev/null || echo "No log entries yet."
+        ;;
+    clear-logs)
+        : > "$LOGFILE"
+        echo "Daemon log cleared."
         ;;
     diagnostics)
         status_command
@@ -165,11 +169,16 @@ case "$1" in
         ;;
     verify)
         if verify_binary_hashes; then
+            printf '%s\n' verified > "$BASE/last-integrity-status"
             echo "Installed binaries match their recorded SHA-256 hashes."
         else
+            printf '%s\n' modified > "$BASE/last-integrity-status"
             echo "ERROR: An installed binary does not match its recorded SHA-256 hash."
             exit 1
         fi
+        ;;
+    binary-update)
+        exec "$MODDIR/action.sh" binary-update
         ;;
     set)
         case "$2" in
@@ -195,7 +204,7 @@ case "$1" in
         esac
         ;;
     *)
-        echo "Usage: $0 {status|logs|diagnostics|start|stop|restart|login|verify|set}"
+        echo "Usage: $0 {status|logs|clear-logs|diagnostics|start|stop|restart|login|verify|binary-update|set}"
         exit 2
         ;;
 esac

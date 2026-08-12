@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.2-bootstrap — 2026-08-12
+
+- Make Magisk Action exclusively launch the KsuWebUIStandalone dashboard.
+- Move manual Tailscale binary updates into a clearly labeled dashboard
+  control while leaving module releases to Magisk's built-in updater.
+- Make normal dashboard refreshes fast by caching the last integrity result;
+  hashing now runs separately on initial load or explicit verification.
+- Ask the live daemon for a control-plane refresh before rechecking status so
+  remotely removed machines can transition out of a stale running state.
+- Label daemon logs as historical rather than current authentication truth.
+- Add a Clear log control.
+
 ## 0.4.1-bootstrap — 2026-08-12
 
 - Open this module directly in KsuWebUIStandalone when Magisk Action detects
