@@ -142,3 +142,16 @@ is_elf() {
     )"
     [ "$MAGIC" = "7f454c46" ]
 }
+
+record_binary_hashes() {
+    (
+        cd "$MODDIR" || exit 1
+        sha256sum bin/tailscale bin/tailscaled > binary-sha256
+        chmod 0600 binary-sha256
+    )
+}
+
+verify_binary_hashes() {
+    [ -s "$MODDIR/binary-sha256" ] || return 1
+    (cd "$MODDIR" && sha256sum -c binary-sha256 >/dev/null 2>&1)
+}

@@ -102,6 +102,12 @@ fi
 
 chmod 0755 "$MODPATH/bin/tailscale" "$MODPATH/bin/tailscaled"
 
+(
+    cd "$MODPATH" || abort "Could not enter the module directory."
+    sha256sum bin/tailscale bin/tailscaled > binary-sha256 ||
+        abort "Could not record binary SHA-256 hashes."
+)
+
 is_elf_installer "$MODPATH/bin/tailscale" ||
     abort "tailscale is not a valid ELF executable."
 is_elf_installer "$MODPATH/bin/tailscaled" ||
@@ -140,7 +146,9 @@ set_perm "$MODPATH/bin/tailscaled" 0 0 0755
 set_perm "$MODPATH/common.sh" 0 0 0755
 set_perm "$MODPATH/service.sh" 0 0 0755
 set_perm "$MODPATH/action.sh" 0 0 0755
+set_perm "$MODPATH/webui.sh" 0 0 0755
 set_perm "$MODPATH/uninstall.sh" 0 0 0755
+set_perm "$MODPATH/binary-sha256" 0 0 0600
 
 ui_print "- Your state remains at /data/adb/tailscale-native"
 ui_print "- Keep the official Tailscale app disconnected"

@@ -75,6 +75,12 @@ valid_commit_marker() {
 echo "Native Tailscale updater"
 echo
 
+if ! verify_binary_hashes; then
+    echo "ERROR: Installed binaries do not match their recorded SHA-256 hashes."
+    echo "Reinstall the module or review the files before attempting an update."
+    exit 1
+fi
+
 CURRENT_VERSION="$("$MODDIR/bin/tailscaled" --version 2>/dev/null | head -n 1)"
 [ -n "$CURRENT_VERSION" ] || CURRENT_VERSION="unknown"
 echo "Installed Tailscale: $CURRENT_VERSION"
@@ -152,12 +158,24 @@ pid_is_ours && WAS_RUNNING=1
 
 cp -fp "$MODDIR/bin/tailscale" "$MODDIR/bin/tailscale.bak" 2>/dev/null || true
 cp -fp "$MODDIR/bin/tailscaled" "$MODDIR/bin/tailscaled.bak" 2>/dev/null || true
+cp -fp "$MODDIR/binary-sha256" "$MODDIR/binary-sha256.bak" 2>/dev/null || true
 
 stop_daemon
 
 cp -f "$TMP/tailscale" "$MODDIR/bin/tailscale"
 cp -f "$TMP/tailscaled" "$MODDIR/bin/tailscaled"
 chmod 0755 "$MODDIR/bin/tailscale" "$MODDIR/bin/tailscaled"
+if ! record_binary_hashes; then
+    echo "ERROR: Could not record the downloaded binary hashes."
+    [ -f "$MODDIR/bin/tailscale.bak" ] &&
+        cp -f "$MODDIR/bin/tailscale.bak" "$MODDIR/bin/tailscale"
+    [ -f "$MODDIR/bin/tailscaled.bak" ] &&
+        cp -f "$MODDIR/bin/tailscaled.bak" "$MODDIR/bin/tailscaled"
+    [ -f "$MODDIR/binary-sha256.bak" ] &&
+        cp -f "$MODDIR/binary-sha256.bak" "$MODDIR/binary-sha256"
+    [ "$WAS_RUNNING" -eq 1 ] && start_daemon || true
+    exit 1
+fi
 
 if official_tailscale_vpn_active; then
     printf '%s\n' "$REMOTE_COMMIT" > "$INSTALLED_COMMIT_FILE"
@@ -183,6 +201,8 @@ stop_daemon
     cp -f "$MODDIR/bin/tailscale.bak" "$MODDIR/bin/tailscale"
 [ -f "$MODDIR/bin/tailscaled.bak" ] &&
     cp -f "$MODDIR/bin/tailscaled.bak" "$MODDIR/bin/tailscaled"
+[ -f "$MODDIR/binary-sha256.bak" ] &&
+    cp -f "$MODDIR/binary-sha256.bak" "$MODDIR/binary-sha256"
 chmod 0755 "$MODDIR/bin/tailscale" "$MODDIR/bin/tailscaled"
 
 if [ "$WAS_RUNNING" -eq 1 ]; then

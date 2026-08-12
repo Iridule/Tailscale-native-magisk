@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0-bootstrap — 2026-08-12
+
+- Add an offline dashboard for Magisk users running KsuWebUIStandalone.
+- Show daemon, TUN interface, connection, version, source revision, and binary
+  integrity status.
+- Add controls for login, start, stop, restart, update, diagnostics, and logs.
+- Add safe settings for Tailscale DNS, subnet routes, shields-up, and hostname.
+- Record binary SHA-256 hashes during installation and after updates.
+- Block binary updates when installed files no longer match their recorded
+  hashes.
+- Keep the existing Magisk Action flow as a fallback.
+
 ## 0.3.0-bootstrap — 2026-08-12
 
 - Detect a fresh device's `NeedsLogin`/`NoState` state from the module Action.

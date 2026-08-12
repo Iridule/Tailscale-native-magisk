@@ -1,6 +1,7 @@
-# Native Tailscale TUN v0.3.0-bootstrap
+# Native Tailscale TUN v0.4.0-bootstrap
 
-This release fixes onboarding on a clean or reformatted device.
+This release adds an optional dashboard for Magisk + KsuWebUIStandalone and
+strengthens installed-binary integrity checking.
 
 ## What it does
 
@@ -8,17 +9,19 @@ This release fixes onboarding on a clean or reformatted device.
   interface.
 - Leaves Android's `VpnService` slot available for another VPN.
 - Reuses the authenticated state under `/data/adb/tailscale-native`.
-- Uses the Magisk Action button for interactive QR/browser login when the
-  daemon reports `NeedsLogin` or `NoState`.
-- Uses that same button for validated, rollback-capable updates after login.
+- Provides a local, offline dashboard with connection and integrity status.
+- Adds safe settings for DNS, subnet routes, shields-up, and hostname.
+- Provides login, service, update, log, and diagnostic controls.
+- Records installed binary SHA-256 hashes and blocks updates after unexpected
+  modification.
+- Retains the Magisk Action login and updater as a fallback.
 - Rechecks the upstream source marker after downloads to reject mixed updates.
 
-## Root cause and fix
+## WebUI compatibility
 
-The boot service started the daemon but intentionally could not authenticate
-it. The previous Action script only checked for binary updates, so a fresh
-state remained in `NeedsLogin`. Action now detects that state, starts
-`tailscale up --qr`, and explains when administrator approval is required.
+The bundled `webroot` targets KsuWebUIStandalone running on Magisk. All assets
+are packaged locally; no external fonts, scripts, analytics, or trackers are
+loaded.
 
 ## Important
 
@@ -34,5 +37,5 @@ state remained in `NeedsLogin`. Action now detects that state, starts
 ## SHA-256
 
 ```text
-314cc17cbc458223cfbabc42c72aea32f5e8a7eed7de90b21be8bc82af84bece
+277ab319c19b1c54ded410b1913df52e63e497a072feecb7432344cba8ad9032
 ```
