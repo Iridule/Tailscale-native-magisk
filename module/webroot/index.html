@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="dark">
   <title>Native Tailscale</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -13,7 +13,8 @@
       <div class="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 48 48"><circle cx="12" cy="12" r="4"/><circle cx="24" cy="12" r="4"/><circle cx="36" cy="12" r="4"/><circle cx="12" cy="24" r="4"/><circle cx="24" cy="24" r="4"/><circle cx="36" cy="24" r="4"/><circle cx="12" cy="36" r="4"/><circle cx="24" cy="36" r="4"/><circle cx="36" cy="36" r="4"/></svg>
       </div>
-      <div><p class="eyebrow">MAGISK CONTROL PANEL</p><h1>Native Tailscale</h1></div>
+      <div class="grow"><p class="eyebrow">MAGISK // KSUWEBUI</p><h1>Native Tailscale</h1></div>
+      <span class="header-chip">NATIVE BINARY</span>
       <button class="icon-button" id="refresh" aria-label="Refresh status">
         <svg viewBox="0 0 24 24"><path d="M20 11a8.1 8.1 0 0 0-14.9-4M4 4v5h5M4 13a8.1 8.1 0 0 0 14.9 4M20 20v-5h-5"/></svg>
       </button>
@@ -21,7 +22,7 @@
 
     <section class="connection-card card">
       <div class="status-orb" id="statusOrb"><span></span></div>
-      <div class="grow"><p class="label">Connection</p><h2 id="backendState">Loading…</h2><p class="muted" id="ipAddress">Checking the native daemon</p></div>
+      <div class="grow"><p class="label">NETWORK STATUS</p><h2 id="backendState">Loading…</h2><p class="muted ip-display" id="ipAddress">Checking the native daemon</p></div>
       <span class="pill" id="interfaceState">—</span>
     </section>
 
@@ -30,7 +31,7 @@
     <section class="card">
       <div class="section-title">
         <span class="section-icon shield"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 2.8 8.2 7 10 4.2-1.8 7-5.3 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
-        <div class="grow"><h3>Integrity</h3><p>Installed binary verification</p></div>
+        <div class="grow"><h3>System integrity</h3><p>Installed binary verification</p></div>
         <span class="integrity" id="integrityState">Checking</span>
       </div>
       <div class="detail-grid">
@@ -48,7 +49,7 @@
     <section class="card">
       <div class="section-title">
         <span class="section-icon network"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M12 7v4M5 16v-3h14v3"/></svg></span>
-        <div><h3>Connection preferences</h3><p>Applied through <code>tailscale set</code></p></div>
+        <div><h3>Configuration flags</h3><p>Applied safely through <code>tailscale set</code></p></div>
       </div>
       <label class="setting"><span><strong>Use Tailscale DNS</strong><small>Accept MagicDNS and tailnet DNS settings</small></span><input type="checkbox" data-setting="accept-dns"></label>
       <label class="setting"><span><strong>Accept subnet routes</strong><small>Use routes advertised by other nodes</small></span><input type="checkbox" data-setting="accept-routes"></label>
@@ -59,7 +60,7 @@
     <section class="card">
       <div class="section-title">
         <span class="section-icon service"><svg viewBox="0 0 24 24"><path d="M12 2v10M5.6 5.6a9 9 0 1 0 12.8 0"/></svg></span>
-        <div><h3>Service controls</h3><p>Manage the root-native daemon</p></div>
+        <div><h3>Daemon controls</h3><p>Manage the root-native service</p></div>
       </div>
       <div class="control-grid">
         <button data-action="start"><svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg>Start</button>
@@ -75,10 +76,10 @@
       <div class="button-row"><button class="secondary" id="loadLogs">Refresh logs</button><button class="secondary" data-action="clear-logs">Clear log</button><button class="secondary" data-action="diagnostics">Run diagnostics</button></div>
     </details>
 
-    <footer><span class="dot"></span> Local, offline interface for Magisk + KsuWebUIStandalone</footer>
+    <footer><span class="dot"></span> SYSTEM LOCAL // MAGISK + KSUWEBUISTANDALONE</footer>
   </main>
   <div class="busy hidden" id="busy"><div class="spinner"></div><p id="busyText">Working…</p></div>
-  <dialog id="outputDialog"><div class="dialog-head"><h3 id="dialogTitle">Result</h3><button id="closeDialog">×</button></div><pre id="dialogOutput"></pre><a class="login-link hidden" id="loginLink">Open Tailscale sign-in</a></dialog>
+  <dialog id="outputDialog"><div class="dialog-head"><h3 id="dialogTitle">Result</h3><button id="closeDialog" aria-label="Close result">×</button></div><pre id="dialogOutput"></pre><a class="login-link hidden" id="loginLink">Open Tailscale sign-in</a><div class="login-url-box hidden" id="loginUrlBox"><span>Authentication URL — tap and hold to copy</span><code id="loginUrlText"></code></div></dialog>
   <script src="app.js"></script>
 </body>
 </html>

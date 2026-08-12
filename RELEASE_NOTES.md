@@ -1,7 +1,7 @@
-# Native Tailscale TUN v0.4.2-bootstrap
+# Native Tailscale TUN v0.4.3-bootstrap
 
-This release simplifies Action behavior, speeds up status refresh, and makes
-the difference between historical logs and current authentication explicit.
+This release gives the local dashboard a cyber-terminal interface while
+keeping the tested v0.4.2 service, login, status, and update behavior intact.
 
 ## What it does
 
@@ -17,6 +17,9 @@ the difference between historical logs and current authentication explicit.
 - Makes Magisk Action exclusively open the dashboard.
 - Moves Tailscale binary updates into the dashboard.
 - Adds log clearing and faster status refresh.
+- Adds a high-contrast, responsive, fully offline visual design.
+- Displays both a large tappable sign-in link and the full selectable
+  authentication URL for copy-and-paste fallback.
 - Uses Magisk's built-in update notification mechanism for module releases.
 - Rechecks the upstream source marker after downloads to reject mixed updates.
 
@@ -28,6 +31,8 @@ loaded.
 
 Magisk Action opens this module directly in KsuWebUIStandalone. The dashboard
 presents a tappable Tailscale sign-in button instead of terminal QR output.
+The complete URL remains visible and selectable if WebView navigation is not
+available on a particular device.
 
 ## Important
 
@@ -43,5 +48,5 @@ presents a tappable Tailscale sign-in button instead of terminal QR output.
 ## SHA-256
 
 ```text
-03106f2413930bb9b2f06b6243ae3d9855c39ea314093504719c4d519a72bda5
+a1400e89d5e56fbe38c45dfd6f95f40c04a9278ef209ef98260ab63dd206d3cd
 ```

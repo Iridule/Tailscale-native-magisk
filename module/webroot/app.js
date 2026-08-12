@@ -95,6 +95,8 @@ function showOutput(title, output) {
   $("#dialogOutput").textContent = output || "Completed successfully.";
   $("#loginLink").classList.add("hidden");
   $("#loginLink").removeAttribute("href");
+  $("#loginUrlBox").classList.add("hidden");
+  $("#loginUrlText").textContent = "";
   $("#outputDialog").showModal();
 }
 
@@ -108,6 +110,8 @@ function showLoginOutput(output) {
   showOutput("Tailscale sign in", message || "Open the authentication page, finish signing in, then return here.");
   $("#loginLink").href = match[1];
   $("#loginLink").classList.remove("hidden");
+  $("#loginUrlText").textContent = match[1];
+  $("#loginUrlBox").classList.remove("hidden");
 }
 
 async function runAction(action, title) {

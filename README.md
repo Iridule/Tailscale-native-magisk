@@ -34,7 +34,7 @@ Tailscale build on a later date.
 
 ## Install
 
-1. Download `native-tailscale-magisk-bootstrap-v0.4.2.zip` from
+1. Download `native-tailscale-magisk-bootstrap-v0.4.3.zip` from
    [Releases](../../releases).
 2. Disconnect the official Android Tailscale app.
 3. Open **Magisk → Modules → Install from storage** and select the ZIP.
@@ -52,8 +52,10 @@ the module's bundled dashboard. It works offline and provides:
 - connection, daemon, TUN interface, version, and upstream revision status;
 - recorded SHA-256 integrity status for both installed binaries;
 - Tailscale DNS, subnet-route, shields-up, and hostname preferences;
-- login, start, stop, restart, integrity, and native-binary update actions; and
-- historical daemon logs with refresh/clear controls and live diagnostics.
+- login, start, stop, restart, integrity, and native-binary update actions;
+- historical daemon logs with refresh/clear controls and live diagnostics; and
+- a local cyber-terminal theme with high-contrast status indicators and no
+  externally loaded fonts or assets.
 
 The dashboard calls only the module's allowlisted helper operations. It does
 not provide an arbitrary command field or store authentication secrets.
@@ -161,7 +163,7 @@ This checksum verifies the bootstrap ZIP only. It does not verify the
 Tailscale binaries downloaded later during installation or an update.
 
 ```text
-03106f2413930bb9b2f06b6243ae3d9855c39ea314093504719c4d519a72bda5  native-tailscale-magisk-bootstrap-v0.4.2.zip
+a1400e89d5e56fbe38c45dfd6f95f40c04a9278ef209ef98260ab63dd206d3cd  native-tailscale-magisk-bootstrap-v0.4.3.zip
 ```
 
 See [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md), and

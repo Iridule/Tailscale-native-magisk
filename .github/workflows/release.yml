@@ -19,23 +19,23 @@ jobs:
       - name: Verify release asset
         run: sha256sum --check SHA256SUMS
 
-      - name: Publish v0.4.2-bootstrap
+      - name: Publish v0.4.3-bootstrap
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view v0.4.2-bootstrap >/dev/null 2>&1; then
-            gh release edit v0.4.2-bootstrap \
-              --title "Native Tailscale TUN v0.4.2-bootstrap" \
+          if gh release view v0.4.3-bootstrap >/dev/null 2>&1; then
+            gh release edit v0.4.3-bootstrap \
+              --title "Native Tailscale TUN v0.4.3-bootstrap" \
               --notes-file RELEASE_NOTES.md
-            gh release upload v0.4.2-bootstrap \
-              release/native-tailscale-magisk-bootstrap-v0.4.2.zip \
+            gh release upload v0.4.3-bootstrap \
+              release/native-tailscale-magisk-bootstrap-v0.4.3.zip \
               SHA256SUMS \
               --clobber
             exit 0
           fi
 
-          gh release create v0.4.2-bootstrap \
-            release/native-tailscale-magisk-bootstrap-v0.4.2.zip \
+          gh release create v0.4.3-bootstrap \
+            release/native-tailscale-magisk-bootstrap-v0.4.3.zip \
             SHA256SUMS \
-            --title "Native Tailscale TUN v0.4.2-bootstrap" \
+            --title "Native Tailscale TUN v0.4.3-bootstrap" \
             --notes-file RELEASE_NOTES.md
