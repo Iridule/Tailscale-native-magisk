@@ -25,9 +25,21 @@ BACKEND_STATE="$(printf '%s\n' "$STATUS_JSON" |
 case "$BACKEND_STATE" in
     NeedsLogin|NoState)
         echo "This device has not been added to your tailnet yet."
-        echo "Open the URL or scan the QR code below, then finish sign-in."
+        if pm path io.github.a13e300.ksuwebui >/dev/null 2>&1; then
+            echo "Opening the module dashboard for sign-in..."
+            if am start \
+                -n io.github.a13e300.ksuwebui/.WebUIActivity \
+                -d ksuwebui://webui/native_tailscale \
+                --es id native_tailscale \
+                --es name "Native Tailscale TUN" >/dev/null 2>&1
+            then
+                exit 0
+            fi
+            echo "Could not open KsuWebUIStandalone; using console login."
+        fi
+        echo "Open the URL shown below, then finish sign-in."
         echo
-        "$TAILSCALE" --socket="$SOCKET" up --qr
+        "$TAILSCALE" --socket="$SOCKET" up
         LOGIN_RESULT=$?
         echo
         if [ "$LOGIN_RESULT" -ne 0 ]; then

@@ -1,4 +1,4 @@
-Native Tailscale TUN — Magisk bootstrap module v0.4.0
+Native Tailscale TUN — Magisk bootstrap module v0.4.1
 
 PURPOSE
 Runs the android-kxxt patched tailscaled daemon as a root-native TUN service,
