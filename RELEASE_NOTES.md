@@ -42,5 +42,5 @@ falls back to printing Tailscale's plain authentication URL.
 ## SHA-256
 
 ```text
-5c480d54110fecd4898ae6cb36095797b75c1109144a94eaa2f4caf984e9d632
+44cf94c0fd3df5fc10bc7742055ca7cbd3f4e1163a514c64df8669f1efc47d64
 ```

@@ -39,7 +39,8 @@ case "$BACKEND_STATE" in
         fi
         echo "Open the URL shown below, then finish sign-in."
         echo
-        "$TAILSCALE" --socket="$SOCKET" up
+        DEVICE_HOSTNAME="$(android_device_hostname)"
+        "$TAILSCALE" --socket="$SOCKET" up --hostname="$DEVICE_HOSTNAME"
         LOGIN_RESULT=$?
         echo
         if [ "$LOGIN_RESULT" -ne 0 ]; then

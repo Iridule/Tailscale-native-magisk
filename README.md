@@ -162,7 +162,7 @@ This checksum verifies the bootstrap ZIP only. It does not verify the
 Tailscale binaries downloaded later during installation or an update.
 
 ```text
-5c480d54110fecd4898ae6cb36095797b75c1109144a94eaa2f4caf984e9d632  native-tailscale-magisk-bootstrap-v0.4.1.zip
+44cf94c0fd3df5fc10bc7742055ca7cbd3f4e1163a514c64df8669f1efc47d64  native-tailscale-magisk-bootstrap-v0.4.1.zip
 ```
 
 See [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md), and
