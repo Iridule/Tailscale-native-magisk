@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0-bootstrap — 2026-08-12
+
+- Detect a fresh device's `NeedsLogin`/`NoState` state from the module Action.
+- Start interactive `tailscale up --qr` login from the Magisk Action screen.
+- Explain `NeedsMachineAuth` instead of silently running the updater.
+- Start the daemon from Action when boot startup has not left it running.
+- Record an actionable authentication message in the daemon log.
+
 ## 0.2.1-bootstrap — 2026-07-24
 
 - Move legacy standalone launchers completely outside `service.d`.

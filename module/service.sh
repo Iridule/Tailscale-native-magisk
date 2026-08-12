@@ -57,3 +57,11 @@ if ! start_daemon; then
 fi
 
 echo "$(date): native tailscaled started" >> "$LOGFILE"
+
+STATUS_JSON="$("$MODDIR/bin/tailscale" --socket="$SOCKET" status --json 2>/dev/null)"
+if printf '%s\n' "$STATUS_JSON" |
+    grep -Eq '"BackendState"[[:space:]]*:[[:space:]]*"(NeedsLogin|NoState)"'
+then
+    echo "$(date): authentication required; open Magisk and tap the module Action button" \
+        >> "$LOGFILE"
+fi
