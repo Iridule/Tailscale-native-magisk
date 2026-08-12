@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Native Tailscale</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48"><circle cx="12" cy="12" r="4"/><circle cx="24" cy="12" r="4"/><circle cx="36" cy="12" r="4"/><circle cx="12" cy="24" r="4"/><circle cx="24" cy="24" r="4"/><circle cx="36" cy="24" r="4"/><circle cx="12" cy="36" r="4"/><circle cx="24" cy="36" r="4"/><circle cx="36" cy="36" r="4"/></svg>
+      </div>
+      <div><p class="eyebrow">MAGISK CONTROL PANEL</p><h1>Native Tailscale</h1></div>
+      <button class="icon-button" id="refresh" aria-label="Refresh status">
+        <svg viewBox="0 0 24 24"><path d="M20 11a8.1 8.1 0 0 0-14.9-4M4 4v5h5M4 13a8.1 8.1 0 0 0 14.9 4M20 20v-5h-5"/></svg>
+      </button>
+    </header>
+
+    <section class="connection-card card">
+      <div class="status-orb" id="statusOrb"><span></span></div>
+      <div class="grow"><p class="label">Connection</p><h2 id="backendState">Loading…</h2><p class="muted" id="ipAddress">Checking the native daemon</p></div>
+      <span class="pill" id="interfaceState">—</span>
+    </section>
+
+    <div class="alert hidden" id="alertBox"></div>
+
+    <section class="card">
+      <div class="section-title">
+        <span class="section-icon shield"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 2.8 8.2 7 10 4.2-1.8 7-5.3 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <div class="grow"><h3>Integrity</h3><p>Installed binary verification</p></div>
+        <span class="integrity" id="integrityState">Checking</span>
+      </div>
+      <div class="detail-grid">
+        <div><span>Upstream source revision</span><code id="commit">—</code></div>
+        <div><span>Tailscale version</span><strong id="tailscaleVersion">—</strong></div>
+        <div><span>Module version</span><strong id="moduleVersion">—</strong></div>
+        <div><span>Daemon PID</span><strong id="pid">—</strong></div>
+      </div>
+      <div class="button-row">
+        <button class="secondary" data-action="verify"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 2.8 8.2 7 10 4.2-1.8 7-5.3 7-10V6l-7-3Z"/></svg>Verify hashes</button>
+        <button class="primary" data-action="update"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Check update</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">
+        <span class="section-icon network"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M12 7v4M5 16v-3h14v3"/></svg></span>
+        <div><h3>Connection preferences</h3><p>Applied through <code>tailscale set</code></p></div>
+      </div>
+      <label class="setting"><span><strong>Use Tailscale DNS</strong><small>Accept MagicDNS and tailnet DNS settings</small></span><input type="checkbox" data-setting="accept-dns"></label>
+      <label class="setting"><span><strong>Accept subnet routes</strong><small>Use routes advertised by other nodes</small></span><input type="checkbox" data-setting="accept-routes"></label>
+      <label class="setting"><span><strong>Shields up</strong><small>Block incoming tailnet connections</small></span><input type="checkbox" data-setting="shields-up"></label>
+      <div class="hostname-row"><label for="hostname"><strong>Device hostname</strong><small>Letters, numbers, dots, and hyphens</small></label><div><input id="hostname" maxlength="63" placeholder="my-phone"><button id="saveHostname">Save</button></div></div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">
+        <span class="section-icon service"><svg viewBox="0 0 24 24"><path d="M12 2v10M5.6 5.6a9 9 0 1 0 12.8 0"/></svg></span>
+        <div><h3>Service controls</h3><p>Manage the root-native daemon</p></div>
+      </div>
+      <div class="control-grid">
+        <button data-action="start"><svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg>Start</button>
+        <button data-action="restart"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Restart</button>
+        <button data-action="stop"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>Stop</button>
+        <button data-action="login"><svg viewBox="0 0 24 24"><path d="M10 17 15 12 10 7M15 12H3M14 4h6v16h-6"/></svg>Sign in</button>
+      </div>
+    </section>
+
+    <details class="card logs-card">
+      <summary><span class="section-icon terminal"><svg viewBox="0 0 24 24"><path d="m5 7 4 5-4 5M11 17h8"/></svg></span><span class="grow"><strong>Logs and diagnostics</strong><small>Recent daemon activity</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></summary>
+      <pre id="logs">Open this section to load logs.</pre>
+      <div class="button-row"><button class="secondary" id="loadLogs">Refresh logs</button><button class="secondary" data-action="diagnostics">Run diagnostics</button></div>
+    </details>
+
+    <footer><span class="dot"></span> Local, offline interface for Magisk + KsuWebUIStandalone</footer>
+  </main>
+  <div class="busy hidden" id="busy"><div class="spinner"></div><p id="busyText">Working…</p></div>
+  <dialog id="outputDialog"><div class="dialog-head"><h3 id="dialogTitle">Result</h3><button id="closeDialog">×</button></div><pre id="dialogOutput"></pre></dialog>
+  <script src="app.js"></script>
+</body>
+</html>

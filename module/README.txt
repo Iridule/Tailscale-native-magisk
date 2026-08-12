@@ -1,4 +1,4 @@
-Native Tailscale TUN — Magisk bootstrap module v0.3.0
+Native Tailscale TUN — Magisk bootstrap module v0.4.0
 
 PURPOSE
 Runs the android-kxxt patched tailscaled daemon as a root-native TUN service,
@@ -25,6 +25,12 @@ the device is authenticated, the same button:
 - backs up the current binaries
 - restarts the daemon
 - rolls back automatically if the new daemon fails to start
+
+OPTIONAL WEBUI
+Install KsuWebUIStandalone on Magisk to open the bundled dashboard. It shows
+connection and integrity status, exposes safe Tailscale preferences, controls
+the native service, checks binary updates, and displays recent logs. The
+existing Magisk Action button remains available as a fallback.
 
 SECURITY NOTE
 The upstream repository currently publishes raw prebuilts without signed

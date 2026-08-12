@@ -1,6 +1,6 @@
 id=native_tailscale
 name=Native Tailscale TUN
-version=0.3.0-bootstrap
-versionCode=300
+version=0.4.0-bootstrap
+versionCode=400
 author=Iridule with help from OpenAI
-description=Root-native Android Tailscale with Action-button login and safe binary updates.
+description=Root-native Android Tailscale with Action login, verified updates, and a KsuWebUIStandalone dashboard.

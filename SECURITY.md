@@ -34,6 +34,19 @@ socket, PID, logs, and update hashes are stored under:
 
 The directory is mode `0700` and files are created under a restrictive umask.
 
+## WebUI boundary
+
+The optional dashboard is opened by KsuWebUIStandalone and therefore runs with
+the root command bridge that application provides. The dashboard ships no
+remote assets and exposes no arbitrary command input. Its controls call a
+module-owned helper with an allowlist of status, service, update, log, and
+validated preference operations. Hostnames and boolean values are validated
+again in the root helper before they reach the Tailscale CLI.
+
+Only install KsuWebUIStandalone from a source you trust and keep its root
+permission scoped appropriately. Any application with an unrestricted root
+bridge is part of the device's trusted computing base.
+
 ## Reporting a vulnerability
 
 Open a GitHub issue only for non-sensitive reports. Do not include credentials,
