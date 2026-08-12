@@ -34,7 +34,7 @@ Tailscale build on a later date.
 
 ## Install
 
-1. Download `native-tailscale-magisk-bootstrap-v0.4.4.zip` from
+1. Download `native-tailscale-magisk-bootstrap-v0.4.5.zip` from
    [Releases](../../releases).
 2. Disconnect the official Android Tailscale app.
 3. Open **Magisk → Modules → Install from storage** and select the ZIP.
@@ -170,7 +170,7 @@ This checksum verifies the bootstrap ZIP only. It does not verify the
 Tailscale binaries downloaded later during installation or an update.
 
 ```text
-34323763c2a9a517da3c608d080359a36f0a854711feedaffae7629ec3ef1d5b  native-tailscale-magisk-bootstrap-v0.4.4.zip
+1191babf3fe5166116a6604e5f4f7e52c80678fc137f75bf167e2163e42805f0  native-tailscale-magisk-bootstrap-v0.4.5.zip
 ```
 
 See [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md), and

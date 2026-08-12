@@ -1,6 +1,6 @@
 {
-  "version": "0.4.4-bootstrap",
-  "versionCode": 404,
-  "zipUrl": "https://github.com/Iridule/Tailscale-native-magisk/releases/download/v0.4.4-bootstrap/native-tailscale-magisk-bootstrap-v0.4.4.zip",
+  "version": "0.4.5-bootstrap",
+  "versionCode": 405,
+  "zipUrl": "https://github.com/Iridule/Tailscale-native-magisk/releases/download/v0.4.5-bootstrap/native-tailscale-magisk-bootstrap-v0.4.5.zip",
   "changelog": "https://raw.githubusercontent.com/Iridule/Tailscale-native-magisk/main/CHANGELOG.md"
 }
