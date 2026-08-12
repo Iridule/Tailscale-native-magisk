@@ -39,7 +39,7 @@ The directory is mode `0700` and files are created under a restrictive umask.
 The optional dashboard is opened by KsuWebUIStandalone and therefore runs with
 the root command bridge that application provides. The dashboard ships no
 remote assets and exposes no arbitrary command input. Its controls call a
-module-owned helper with an allowlist of status, service, update, log, and
+module-owned helper with an allowlist of status, service, integrity, log, and
 validated preference operations. Hostnames and boolean values are validated
 again in the root helper before they reach the Tailscale CLI.
 
