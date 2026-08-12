@@ -34,13 +34,14 @@ Tailscale build on a later date.
 
 ## Install
 
-1. Download `native-tailscale-magisk-bootstrap-v0.4.1.zip` from
+1. Download `native-tailscale-magisk-bootstrap-v0.4.2.zip` from
    [Releases](../../releases).
 2. Disconnect the official Android Tailscale app.
 3. Open **Magisk → Modules → Install from storage** and select the ZIP.
 4. Reboot.
-5. Open **Magisk → Modules** and tap this module's **Action** button.
-6. Open the displayed login URL or scan its QR code and finish signing in.
+5. Install KsuWebUIStandalone if it is not already installed.
+6. Open **Magisk → Modules** and tap this module's **Action** button.
+7. In the dashboard, tap **Sign in**, then **Open Tailscale sign-in**.
 
 ## Optional dashboard
 
@@ -51,8 +52,8 @@ the module's bundled dashboard. It works offline and provides:
 - connection, daemon, TUN interface, version, and upstream revision status;
 - recorded SHA-256 integrity status for both installed binaries;
 - Tailscale DNS, subnet-route, shields-up, and hostname preferences;
-- login, start, stop, restart, and integrity actions; and
-- recent logs and diagnostics.
+- login, start, stop, restart, integrity, and native-binary update actions; and
+- historical daemon logs with refresh/clear controls and live diagnostics.
 
 The dashboard calls only the module's allowlisted helper operations. It does
 not provide an arbitrary command field or store authentication secrets.
@@ -67,9 +68,8 @@ module reuses:
 /data/adb/tailscale-native/tailscaled.state
 ```
 
-The Action button detects an unauthenticated fresh install and runs Tailscale's
-interactive QR login. On an already authenticated installation, it checks for
-upstream binary updates instead. You can also authenticate from a root shell:
+The Action button only opens the dashboard. You can also authenticate from a
+root shell:
 
 ```sh
 su -c '/data/adb/modules/native_tailscale/bin/tailscale \
@@ -99,9 +99,8 @@ Log file:
 
 ## Update the native binaries
 
-Tap the module's **Action** button in Magisk. If the device needs login, the
-button starts interactive login first. Once authenticated, updates are manual
-and never run automatically at boot. The updater:
+Open the dashboard and tap **Update Tailscale**. Updates are manual and never
+run automatically at boot. The updater:
 
 - compares the installed and upstream source commit markers;
 - downloads the new ARM64 binaries;
@@ -117,8 +116,8 @@ and never run automatically at boot. The updater:
 The upstream prebuilt repository currently provides raw binaries without a
 signed release or signed checksum manifest. Installation and updates therefore
 trust HTTPS, GitHub, and the android-kxxt repository. Review upstream changes
-before installing or pressing **Action** if this trust model does not fit your
-needs. The recorded SHA-256 hashes document what was downloaded; they are not
+before installing or selecting **Update Tailscale** if this trust model does
+not fit your needs. The recorded SHA-256 hashes document what was downloaded; they are not
 checked against an independently trusted upstream manifest.
 
 ## Known limitations
@@ -162,7 +161,7 @@ This checksum verifies the bootstrap ZIP only. It does not verify the
 Tailscale binaries downloaded later during installation or an update.
 
 ```text
-44cf94c0fd3df5fc10bc7742055ca7cbd3f4e1163a514c64df8669f1efc47d64  native-tailscale-magisk-bootstrap-v0.4.1.zip
+03106f2413930bb9b2f06b6243ae3d9855c39ea314093504719c4d519a72bda5  native-tailscale-magisk-bootstrap-v0.4.2.zip
 ```
 
 See [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md), and

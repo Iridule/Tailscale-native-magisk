@@ -75,9 +75,10 @@ function renderStatus(data) {
   else showAlert("");
 }
 
-async function refreshStatus() {
+async function refreshStatus(force = false) {
   try {
-    renderStatus(parseFields(await execHelper("status")));
+    renderStatus(parseFields(await execHelper(force ? "status refresh" : "status")));
+    if (force) setTimeout(() => refreshStatus(false), 1200);
   } catch (error) {
     showAlert(error.message, "bad");
     setText("#backendState", "Unavailable");
@@ -119,14 +120,15 @@ async function runAction(action, title) {
     showOutput(`${title} failed`, error.message);
   } finally {
     setBusy(false);
-    refreshStatus();
+    refreshStatus(false);
+    if (action === "clear-logs") loadLogs();
   }
 }
 
-$("#refresh").addEventListener("click", refreshStatus);
+$("#refresh").addEventListener("click", () => refreshStatus(true));
 $("#closeDialog").addEventListener("click", () => $("#outputDialog").close());
 $$('[data-action]').forEach((button) => button.addEventListener("click", () => {
-  const labels = { start: "Starting service", stop: "Stopping service", restart: "Restarting service", login: "Tailscale sign in", verify: "Verifying binaries", diagnostics: "Diagnostics" };
+  const labels = { start: "Starting service", stop: "Stopping service", restart: "Restarting service", login: "Tailscale sign in", verify: "Verifying binaries", "binary-update": "Updating Tailscale binaries", "clear-logs": "Clearing daemon log", diagnostics: "Diagnostics" };
   runAction(button.dataset.action, labels[button.dataset.action] || button.dataset.action);
 }));
 
@@ -151,4 +153,8 @@ async function loadLogs() {
 $("#loadLogs").addEventListener("click", loadLogs);
 $(".logs-card").addEventListener("toggle", (event) => { if (event.target.open) loadLogs(); });
 
-refreshStatus();
+refreshStatus(false).then(() => {
+  if ($("#integrityState").textContent === "recorded") {
+    execHelper("verify").catch(() => {}).finally(() => refreshStatus(false));
+  }
+});

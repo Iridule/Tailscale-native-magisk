@@ -107,6 +107,9 @@ chmod 0755 "$MODPATH/bin/tailscale" "$MODPATH/bin/tailscaled"
     sha256sum bin/tailscale bin/tailscaled > binary-sha256 ||
         abort "Could not record binary SHA-256 hashes."
 )
+mkdir -p /data/adb/tailscale-native
+chmod 0700 /data/adb/tailscale-native
+printf '%s\n' verified > /data/adb/tailscale-native/last-integrity-status
 
 is_elf_installer "$MODPATH/bin/tailscale" ||
     abort "tailscale is not a valid ELF executable."
@@ -153,5 +156,6 @@ set_perm "$MODPATH/binary-sha256" 0 0 0600
 ui_print "- Your state remains at /data/adb/tailscale-native"
 ui_print "- Keep the official Tailscale app disconnected"
 ui_print "- Reboot after installation"
-ui_print "- After reboot, tap the module Action button to sign in"
-ui_print "- After sign-in, the Action button checks for upstream updates"
+ui_print "- Install KsuWebUIStandalone if needed"
+ui_print "- After reboot, tap Action to open the dashboard and sign in there"
+ui_print "- Use Update Tailscale in the dashboard for manual binary updates"

@@ -5,6 +5,25 @@ MODDIR=${0%/*}
 
 TAILSCALE="$MODDIR/bin/tailscale"
 
+if [ "$1" != "binary-update" ]; then
+    if ! pm path io.github.a13e300.ksuwebui >/dev/null 2>&1; then
+        echo "KsuWebUIStandalone is required to open this module's dashboard."
+        echo "Install it, then tap Action again."
+        echo "https://github.com/KOWX712/KsuWebUIStandalone/releases"
+        exit 1
+    fi
+    echo "Opening Native Tailscale dashboard..."
+    am start \
+        -n io.github.a13e300.ksuwebui/.WebUIActivity \
+        -d ksuwebui://webui/native_tailscale \
+        --es id native_tailscale \
+        --es name "Native Tailscale TUN" >/dev/null 2>&1 || {
+            echo "ERROR: KsuWebUIStandalone could not open the dashboard."
+            exit 1
+        }
+    exit 0
+fi
+
 if ! pid_is_ours; then
     echo "Native tailscaled is not running; starting it..."
     if official_tailscale_vpn_active; then
@@ -24,37 +43,13 @@ BACKEND_STATE="$(printf '%s\n' "$STATUS_JSON" |
 
 case "$BACKEND_STATE" in
     NeedsLogin|NoState)
-        echo "This device has not been added to your tailnet yet."
-        if pm path io.github.a13e300.ksuwebui >/dev/null 2>&1; then
-            echo "Opening the module dashboard for sign-in..."
-            if am start \
-                -n io.github.a13e300.ksuwebui/.WebUIActivity \
-                -d ksuwebui://webui/native_tailscale \
-                --es id native_tailscale \
-                --es name "Native Tailscale TUN" >/dev/null 2>&1
-            then
-                exit 0
-            fi
-            echo "Could not open KsuWebUIStandalone; using console login."
-        fi
-        echo "Open the URL shown below, then finish sign-in."
-        echo
-        DEVICE_HOSTNAME="$(android_device_hostname)"
-        "$TAILSCALE" --socket="$SOCKET" up --hostname="$DEVICE_HOSTNAME"
-        LOGIN_RESULT=$?
-        echo
-        if [ "$LOGIN_RESULT" -ne 0 ]; then
-            echo "Login did not complete. You can tap Action to try again."
-            exit "$LOGIN_RESULT"
-        fi
-        echo "Login completed."
-        "$TAILSCALE" --socket="$SOCKET" status || true
-        exit 0
+        echo "ERROR: Sign in from the dashboard before updating Tailscale binaries."
+        exit 1
         ;;
     NeedsMachineAuth)
         echo "This device is signed in but is waiting for an administrator to approve it."
-        echo "Approve it in the Tailscale admin console, then tap Action again."
-        exit 0
+        echo "Approve it in the Tailscale admin console before updating binaries."
+        exit 1
         ;;
     "")
         echo "ERROR: Could not read tailscaled status. Check $LOGFILE"
@@ -145,7 +140,7 @@ if ! valid_commit_marker "$POST_COMMIT"; then
 fi
 
 if [ "$POST_COMMIT" != "$REMOTE_COMMIT" ]; then
-    echo "ERROR: Upstream changed during download. Run Action again."
+    echo "ERROR: Upstream changed during download. Run Update Tailscale again."
     exit 1
 fi
 

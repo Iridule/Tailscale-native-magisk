@@ -1,4 +1,4 @@
-Native Tailscale TUN — Magisk bootstrap module v0.4.1
+Native Tailscale TUN — Magisk bootstrap module v0.4.2
 
 PURPOSE
 Runs the android-kxxt patched tailscaled daemon as a root-native TUN service,
@@ -8,14 +8,15 @@ INSTALL
 1. Disconnect the official Android Tailscale app.
 2. Install this ZIP from Magisk > Modules > Install from storage.
 3. Reboot.
-4. Tap the module's Action button and open the displayed URL or scan its QR.
-5. The module reuses:
+4. Install KsuWebUIStandalone.
+5. Tap the module's Action button to open the dashboard, then tap Sign in.
+6. The module reuses:
    /data/adb/tailscale-native/tailscaled.state
    so your existing Tailscale node identity should remain logged in.
 
 LOGIN AND UPDATES
-On a fresh device, the Action button starts interactive Tailscale login. Once
-the device is authenticated, the same button:
+The Action button only opens the dashboard. Sign in and run manual Tailscale
+binary updates there. The binary updater:
 - checks android-kxxt/external_tailscale_prebuilt
 - compares the upstream source commit marker
 - downloads ARM64 tailscale and tailscaled
@@ -30,8 +31,8 @@ OPTIONAL WEBUI
 Install KsuWebUIStandalone on Magisk to open the bundled dashboard. It shows
 connection and integrity status, exposes safe Tailscale preferences, controls
 the native service, verifies installed binaries, and displays recent logs.
-Magisk handles module update notifications; the existing Action button remains
-the manual Tailscale binary updater and login fallback.
+Magisk handles module update notifications. The dashboard handles login and
+manual Tailscale binary updates.
 
 SECURITY NOTE
 The upstream repository currently publishes raw prebuilts without signed
