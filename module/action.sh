@@ -80,6 +80,29 @@ valid_commit_marker() {
     esac
 }
 
+connection_summary() {
+    LIVE_STATUS_JSON="$($TAILSCALE --socket="$SOCKET" status --json 2>/dev/null)"
+    LIVE_STATE="$(printf '%s\n' "$LIVE_STATUS_JSON" |
+        sed -n 's/.*"BackendState"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' |
+        head -n 1)"
+    LIVE_HOSTNAME="$(printf '%s\n' "$LIVE_STATUS_JSON" |
+        sed -n 's/.*"HostName"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' |
+        head -n 1)"
+    LIVE_IPV4="$($TAILSCALE --socket="$SOCKET" ip -4 2>/dev/null | head -n 1)"
+    LIVE_TUN=down
+    ip link show tailscale0 >/dev/null 2>&1 && LIVE_TUN=up
+
+    echo
+    echo "Connection summary"
+    echo "State: ${LIVE_STATE:-unknown}"
+    echo "Tailscale IP: ${LIVE_IPV4:-not assigned}"
+    echo "Device: ${LIVE_HOSTNAME:-$(android_device_hostname)}"
+    echo "TUN interface: $LIVE_TUN"
+    if [ "$LIVE_STATE" = Running ] && [ "$LIVE_TUN" = up ]; then
+        echo "Tailnet routing is active."
+    fi
+}
+
 echo "Native Tailscale updater"
 echo
 
@@ -111,7 +134,7 @@ echo "Upstream source commit:  $REMOTE_COMMIT"
 if [ "$REMOTE_COMMIT" = "$INSTALLED_COMMIT" ]; then
     echo
     echo "Already current."
-    "$MODDIR/bin/tailscale" --socket="$SOCKET" status 2>/dev/null || true
+    connection_summary
     exit 0
 fi
 
@@ -197,7 +220,7 @@ if start_daemon; then
     printf '%s\n' "$REMOTE_COMMIT" > "$INSTALLED_COMMIT_FILE"
     echo
     echo "Update succeeded and tailscaled restarted."
-    "$MODDIR/bin/tailscale" --socket="$SOCKET" status 2>/dev/null || true
+    connection_summary
     exit 0
 fi
 
