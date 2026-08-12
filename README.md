@@ -34,11 +34,13 @@ Tailscale build on a later date.
 
 ## Install
 
-1. Download `native-tailscale-magisk-bootstrap-v0.2.1.zip` from
+1. Download `native-tailscale-magisk-bootstrap-v0.3.0.zip` from
    [Releases](../../releases).
 2. Disconnect the official Android Tailscale app.
 3. Open **Magisk → Modules → Install from storage** and select the ZIP.
 4. Reboot.
+5. Open **Magisk → Modules** and tap this module's **Action** button.
+6. Open the displayed login URL or scan its QR code and finish signing in.
 
 If this device was already configured by the standalone native setup, the
 module reuses:
@@ -47,7 +49,9 @@ module reuses:
 /data/adb/tailscale-native/tailscaled.state
 ```
 
-Otherwise, authenticate from a root shell:
+The Action button detects an unauthenticated fresh install and runs Tailscale's
+interactive QR login. On an already authenticated installation, it checks for
+upstream binary updates instead. You can also authenticate from a root shell:
 
 ```sh
 su -c '/data/adb/modules/native_tailscale/bin/tailscale \
@@ -77,8 +81,9 @@ Log file:
 
 ## Update the native binaries
 
-Tap the module's **Action** button in Magisk. Updates are manual and never run
-automatically at boot. The updater:
+Tap the module's **Action** button in Magisk. If the device needs login, the
+button starts interactive login first. Once authenticated, updates are manual
+and never run automatically at boot. The updater:
 
 - compares the installed and upstream source commit markers;
 - downloads the new ARM64 binaries;
@@ -139,7 +144,7 @@ This checksum verifies the bootstrap ZIP only. It does not verify the
 Tailscale binaries downloaded later during installation or an update.
 
 ```text
-7b512622049f0a32acf3520d3ffa049c296348b8807585789f5396b2eb524e4a  native-tailscale-magisk-bootstrap-v0.2.1.zip
+314cc17cbc458223cfbabc42c72aea32f5e8a7eed7de90b21be8bc82af84bece  native-tailscale-magisk-bootstrap-v0.3.0.zip
 ```
 
 See [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md), and

@@ -145,4 +145,5 @@ set_perm "$MODPATH/uninstall.sh" 0 0 0755
 ui_print "- Your state remains at /data/adb/tailscale-native"
 ui_print "- Keep the official Tailscale app disconnected"
 ui_print "- Reboot after installation"
-ui_print "- Use the module Action button for upstream updates"
+ui_print "- After reboot, tap the module Action button to sign in"
+ui_print "- After sign-in, the Action button checks for upstream updates"

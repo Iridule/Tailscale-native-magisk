@@ -3,6 +3,52 @@
 MODDIR=${0%/*}
 . "$MODDIR/common.sh"
 
+TAILSCALE="$MODDIR/bin/tailscale"
+
+if ! pid_is_ours; then
+    echo "Native tailscaled is not running; starting it..."
+    if official_tailscale_vpn_active; then
+        echo "ERROR: Disconnect the official Tailscale Android app first."
+        exit 1
+    fi
+    if ! start_daemon; then
+        echo "ERROR: tailscaled did not start. Check $LOGFILE"
+        exit 1
+    fi
+fi
+
+STATUS_JSON="$($TAILSCALE --socket="$SOCKET" status --json 2>/dev/null)"
+BACKEND_STATE="$(printf '%s\n' "$STATUS_JSON" |
+    sed -n 's/.*"BackendState"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' |
+    head -n 1)"
+
+case "$BACKEND_STATE" in
+    NeedsLogin|NoState)
+        echo "This device has not been added to your tailnet yet."
+        echo "Open the URL or scan the QR code below, then finish sign-in."
+        echo
+        "$TAILSCALE" --socket="$SOCKET" up --qr
+        LOGIN_RESULT=$?
+        echo
+        if [ "$LOGIN_RESULT" -ne 0 ]; then
+            echo "Login did not complete. You can tap Action to try again."
+            exit "$LOGIN_RESULT"
+        fi
+        echo "Login completed."
+        "$TAILSCALE" --socket="$SOCKET" status || true
+        exit 0
+        ;;
+    NeedsMachineAuth)
+        echo "This device is signed in but is waiting for an administrator to approve it."
+        echo "Approve it in the Tailscale admin console, then tap Action again."
+        exit 0
+        ;;
+    "")
+        echo "ERROR: Could not read tailscaled status. Check $LOGFILE"
+        exit 1
+        ;;
+esac
+
 REPO_RAW=https://raw.githubusercontent.com/android-kxxt/external_tailscale_prebuilt/main
 TMP="$BASE/update.$$"
 REMOTE_COMMIT_FILE="$TMP/commit"
