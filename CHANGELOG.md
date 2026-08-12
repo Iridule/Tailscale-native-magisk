@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.5-bootstrap — 2026-08-12
+
+- Recover saved sessions automatically after Start or Restart, including after
+  an abrupt daemon kill, by retrying the control-plane refresh while the new
+  daemon settles.
+- Treat transient `NeedsLogin`/`NoState` startup states as session restoration
+  instead of immediately prompting for authentication.
+- Disable the login action during recovery and show a green **Signed in**
+  state once the daemon reaches `Running`.
+- Use a bare `tailscale up` for genuine authentication so existing non-default
+  subnet-route, shields-up, hostname, and DNS preferences are preserved.
+- Recheck live daemon state during login and report when the saved session has
+  already recovered instead of claiming that a sign-in URL is unavailable.
+- Remove the mismatched accent-colored bottom-right corner decoration from
+  dashboard cards.
+
 ## 0.4.4-bootstrap — 2026-08-12
 
 - Return pending authentication URLs through the same `login_url=` WebUI

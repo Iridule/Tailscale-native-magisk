@@ -102,10 +102,20 @@ print_login_result() {
     if [ -n "$LOGIN_URL" ]; then
         printf 'login_url=%s\n' "$LOGIN_URL"
         echo "Complete authentication in the sign-in page, then return to the dashboard."
+    elif [ "$(login_backend_state)" = Running ]; then
+        echo "This device is already signed in."
     else
         cat "$LOGIN_LOG" 2>/dev/null
-        echo "The sign-in URL is not ready yet. Tap Sign in again in a few seconds."
+        RESULT_PID="$(cat "$LOGIN_PIDFILE" 2>/dev/null)"
+        if [ -n "$RESULT_PID" ] && kill -0 "$RESULT_PID" 2>/dev/null; then
+            echo "The sign-in URL is not ready yet. Tap Sign in again in a few seconds."
+        fi
     fi
+}
+
+login_backend_state() {
+    LOGIN_STATUS_JSON="$($TAILSCALE --socket="$SOCKET" status --json 2>/dev/null)"
+    json_value "$LOGIN_STATUS_JSON" BackendState
 }
 
 case "$1" in
@@ -160,6 +170,10 @@ case "$1" in
         ;;
     login)
         require_running
+        if [ "$(login_backend_state)" = Running ]; then
+            echo "This device is already signed in."
+            exit 0
+        fi
         LOGIN_LOG="$BASE/webui-login.log"
         LOGIN_PIDFILE="$BASE/webui-login.pid"
         LOGIN_PID="$(cat "$LOGIN_PIDFILE" 2>/dev/null)"
@@ -168,13 +182,14 @@ case "$1" in
             exit 0
         fi
         : > "$LOGIN_LOG"
-        DEVICE_HOSTNAME="$(android_device_hostname)"
-        nohup "$TAILSCALE" --socket="$SOCKET" up --hostname="$DEVICE_HOSTNAME" \
-            --accept-dns=false \
+        disable_unsupported_android_dns || true
+        ensure_device_hostname || true
+        nohup "$TAILSCALE" --socket="$SOCKET" up \
             > "$LOGIN_LOG" 2>&1 &
         echo "$!" > "$LOGIN_PIDFILE"
         I=0
         while [ ! -s "$LOGIN_LOG" ] && [ "$I" -lt 8 ]; do
+            [ "$(login_backend_state)" = Running ] && break
             sleep 1
             I=$((I + 1))
         done

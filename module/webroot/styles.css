@@ -109,18 +109,6 @@ main {
   box-shadow: inset 0 0 20px rgba(33, 230, 237, .045), 0 0 15px rgba(33, 230, 237, .08);
 }
 
-.card::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 22px;
-  height: 22px;
-  pointer-events: none;
-  border-right: 3px solid var(--magenta);
-  border-bottom: 3px solid var(--magenta);
-}
-
 .connection-card {
   display: flex;
   align-items: center;
@@ -236,6 +224,7 @@ button.primary, [data-action="login"] { border-color: var(--cyan); background: v
 button.secondary { background: rgba(3, 10, 16, .6); }
 [data-action="stop"], [data-action="clear-logs"] { border-color: var(--magenta); color: #ff78f6; background: var(--magenta-soft); }
 button:disabled { cursor: not-allowed; opacity: .42; }
+button.signed-in:disabled { border-color: var(--green); background: var(--green-soft); color: var(--green); cursor: default; opacity: 1; box-shadow: 0 0 11px rgba(60, 255, 114, .16); }
 
 .setting { display: flex; align-items: center; gap: 12px; padding: 14px 2px; border-top: 1px solid rgba(130, 148, 163, .15); }
 .setting:first-of-type { border-top: 0; }
@@ -284,7 +273,6 @@ input[type="checkbox"]:disabled { opacity: .4; cursor: not-allowed; }
 .control-grid [data-action="open-admin"] { grid-column: 1 / -1; }
 
 .logs-card { padding: 0; border-color: rgba(60, 255, 114, .72); box-shadow: inset 0 0 22px rgba(60, 255, 114, .045), 0 0 14px rgba(60, 255, 114, .07); }
-.logs-card::after { border-color: var(--green); }
 summary { display: flex; align-items: center; gap: 11px; padding: 13px 17px; list-style: none; background: var(--green); color: #001407; cursor: pointer; }
 summary::-webkit-details-marker { display: none; }
 summary strong { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
@@ -338,8 +326,8 @@ dialog::backdrop { background: rgba(0, 2, 7, .82); }
 @keyframes statusPulse { 50% { opacity: .65; box-shadow: 0 0 7px var(--green); } }
 
 @media (hover: hover) {
-  button:hover { background: var(--cyan-soft); box-shadow: 0 0 12px rgba(33, 230, 237, .16); }
-  button.primary:hover, [data-action="login"]:hover { background: #64faff; }
+  button:not(:disabled):hover { background: var(--cyan-soft); box-shadow: 0 0 12px rgba(33, 230, 237, .16); }
+  button.primary:not(:disabled):hover, [data-action="login"]:not(:disabled):hover { background: #64faff; }
 }
 
 @media (max-width: 520px) {

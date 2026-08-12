@@ -7,6 +7,7 @@ function shellQuote(value) {
 }
 
 let callbackId = 0;
+let sessionRestoreUntil = 0;
 window.__nativeTailscaleCallbacks = {};
 
 function execHelper(args) {
@@ -69,20 +70,51 @@ function renderStatus(data) {
   });
   if (document.activeElement !== $("#hostname")) $("#hostname").value = data.hostname || "";
 
+  const loginButton = $("#loginButton");
+  const restoringSession = bool(data.running) && /Starting|NeedsLogin|NoState/.test(state) && Date.now() < sessionRestoreUntil;
+  const signedIn = bool(data.running) && state === "Running";
+  $("#loginButtonLabel").textContent = signedIn ? "Signed in" : restoringSession ? "Restoring" : "Sign in";
+  $("#loginButtonIcon").setAttribute("d", signedIn ? "m5 12 4 4L19 6" : "M10 17 15 12 10 7M15 12H3M14 4h6v16h-6");
+  loginButton.classList.toggle("signed-in", signedIn);
+  loginButton.disabled = signedIn || restoringSession || !bool(data.running) || state === "Starting";
+
   if (bool(data.official_vpn)) showAlert("The official Tailscale Android VPN is active. Disconnect it before starting the native daemon.");
   else if (data.integrity === "modified") showAlert("Binary integrity check failed. Updates are blocked until the installation is reviewed.", "bad");
+  else if (/NeedsLogin|NoState/.test(state) && Date.now() < sessionRestoreUntil) showAlert("Restoring the saved Tailscale session…");
   else if (/NeedsLogin|NoState/.test(state)) showAlert("This device needs authentication. Tap Sign in to open the Tailscale authentication page.");
   else showAlert("");
 }
 
-async function refreshStatus(force = false) {
+async function refreshStatus(force = false, scheduleFollowup = force) {
   try {
-    renderStatus(parseFields(await execHelper(force ? "status refresh" : "status")));
-    if (force) setTimeout(() => refreshStatus(false), 1200);
+    const data = parseFields(await execHelper(force ? "status refresh" : "status"));
+    renderStatus(data);
+    if (scheduleFollowup) setTimeout(() => refreshStatus(false), 1200);
+    return data;
   } catch (error) {
     showAlert(error.message, "bad");
     setText("#backendState", "Unavailable");
+    return null;
   }
+}
+
+function delay(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function refreshAfterServiceStart() {
+  sessionRestoreUntil = Date.now() + 20000;
+  // A new daemon can briefly report NeedsLogin until it receives a fresh
+  // network map. This is the same recovery request as the header refresh.
+  let data = await refreshStatus(true, false);
+
+  while (data && bool(data.running) && /Starting|NeedsLogin|NoState/.test(data.backend_state || "") && Date.now() < sessionRestoreUntil) {
+    await delay(1200);
+    data = await refreshStatus(true, false);
+  }
+
+  sessionRestoreUntil = 0;
+  if (data && /NeedsLogin|NoState/.test(data.backend_state || "")) renderStatus(data);
 }
 
 function setBusy(enabled, text = "Working…") {
@@ -125,7 +157,8 @@ async function runAction(action, title) {
     showOutput(`${title} failed`, error.message);
   } finally {
     setBusy(false);
-    refreshStatus(false);
+    if (action === "start" || action === "restart") await refreshAfterServiceStart();
+    else refreshStatus(false);
     if (action === "clear-logs") loadLogs();
   }
 }
