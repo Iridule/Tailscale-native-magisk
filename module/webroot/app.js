@@ -111,7 +111,7 @@ async function runAction(action, title) {
 $("#refresh").addEventListener("click", refreshStatus);
 $("#closeDialog").addEventListener("click", () => $("#outputDialog").close());
 $$('[data-action]').forEach((button) => button.addEventListener("click", () => {
-  const labels = { start: "Starting service", stop: "Stopping service", restart: "Restarting service", login: "Tailscale sign in", update: "Checking for updates", verify: "Verifying binaries", diagnostics: "Diagnostics" };
+  const labels = { start: "Starting service", stop: "Stopping service", restart: "Restarting service", login: "Tailscale sign in", verify: "Verifying binaries", diagnostics: "Diagnostics" };
   runAction(button.dataset.action, labels[button.dataset.action] || button.dataset.action);
 }));
 

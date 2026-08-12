@@ -11,10 +11,11 @@ strengthens installed-binary integrity checking.
 - Reuses the authenticated state under `/data/adb/tailscale-native`.
 - Provides a local, offline dashboard with connection and integrity status.
 - Adds safe settings for DNS, subnet routes, shields-up, and hostname.
-- Provides login, service, update, log, and diagnostic controls.
+- Provides login, service, integrity, log, and diagnostic controls.
 - Records installed binary SHA-256 hashes and blocks updates after unexpected
   modification.
 - Retains the Magisk Action login and updater as a fallback.
+- Uses Magisk's built-in update notification mechanism for module releases.
 - Rechecks the upstream source marker after downloads to reject mixed updates.
 
 ## WebUI compatibility
@@ -37,5 +38,5 @@ loaded.
 ## SHA-256
 
 ```text
-277ab319c19b1c54ded410b1913df52e63e497a072feecb7432344cba8ad9032
+d62a75123650a008a034d3a6717b4fd73e01a2e5727de69f23df7260233a309b
 ```

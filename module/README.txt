@@ -29,8 +29,9 @@ the device is authenticated, the same button:
 OPTIONAL WEBUI
 Install KsuWebUIStandalone on Magisk to open the bundled dashboard. It shows
 connection and integrity status, exposes safe Tailscale preferences, controls
-the native service, checks binary updates, and displays recent logs. The
-existing Magisk Action button remains available as a fallback.
+the native service, verifies installed binaries, and displays recent logs.
+Magisk handles module update notifications; the existing Action button remains
+the manual Tailscale binary updater and login fallback.
 
 SECURITY NOTE
 The upstream repository currently publishes raw prebuilts without signed

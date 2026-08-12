@@ -51,11 +51,14 @@ the module's bundled dashboard. It works offline and provides:
 - connection, daemon, TUN interface, version, and upstream revision status;
 - recorded SHA-256 integrity status for both installed binaries;
 - Tailscale DNS, subnet-route, shields-up, and hostname preferences;
-- login, start, stop, restart, integrity, and binary-update actions; and
+- login, start, stop, restart, and integrity actions; and
 - recent logs and diagnostics.
 
 The dashboard calls only the module's allowlisted helper operations. It does
 not provide an arbitrary command field or store authentication secrets.
+
+Magisk checks `update.json` and displays module release notifications through
+its normal module interface. The dashboard does not duplicate module updates.
 
 If this device was already configured by the standalone native setup, the
 module reuses:
@@ -159,7 +162,7 @@ This checksum verifies the bootstrap ZIP only. It does not verify the
 Tailscale binaries downloaded later during installation or an update.
 
 ```text
-277ab319c19b1c54ded410b1913df52e63e497a072feecb7432344cba8ad9032  native-tailscale-magisk-bootstrap-v0.4.0.zip
+d62a75123650a008a034d3a6717b4fd73e01a2e5727de69f23df7260233a309b  native-tailscale-magisk-bootstrap-v0.4.0.zip
 ```
 
 See [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md), and

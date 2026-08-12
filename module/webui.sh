@@ -148,9 +148,6 @@ case "$1" in
         done
         cat "$LOGIN_LOG" 2>/dev/null
         ;;
-    update)
-        exec "$MODDIR/action.sh"
-        ;;
     verify)
         if verify_binary_hashes; then
             echo "Installed binaries match their recorded SHA-256 hashes."
@@ -183,7 +180,7 @@ case "$1" in
         esac
         ;;
     *)
-        echo "Usage: $0 {status|logs|diagnostics|start|stop|restart|login|update|verify|set}"
+        echo "Usage: $0 {status|logs|diagnostics|start|stop|restart|login|verify|set}"
         exit 2
         ;;
 esac

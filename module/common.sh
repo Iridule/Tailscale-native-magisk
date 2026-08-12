@@ -11,13 +11,34 @@ mkdir -p "$BASE"
 chmod 0700 "$BASE"
 umask 077
 
+managed_daemon_pid() {
+    for CANDIDATE in $(pidof tailscaled 2>/dev/null); do
+        [ -r "/proc/$CANDIDATE/cmdline" ] || continue
+        CMD="$(tr '\000' ' ' < "/proc/$CANDIDATE/cmdline" 2>/dev/null)"
+        case "$CMD" in
+            *"--state=$STATE"*"--socket=$SOCKET"*"--tun=tailscale0"*)
+                echo "$CANDIDATE"
+                return 0
+                ;;
+        esac
+    done
+    return 1
+}
+
 pid_is_ours() {
-    [ -r "$PIDFILE" ] || return 1
     PID="$(cat "$PIDFILE" 2>/dev/null)"
-    [ -n "$PID" ] || return 1
-    [ -r "/proc/$PID/cmdline" ] || return 1
-    tr '\000' ' ' < "/proc/$PID/cmdline" 2>/dev/null |
-        grep -Fq "$MODDIR/bin/tailscaled"
+    if [ -n "$PID" ] && [ -r "/proc/$PID/cmdline" ]; then
+        CMD="$(tr '\000' ' ' < "/proc/$PID/cmdline" 2>/dev/null)"
+        case "$CMD" in
+            *"--state=$STATE"*"--socket=$SOCKET"*"--tun=tailscale0"*)
+                return 0
+                ;;
+        esac
+    fi
+
+    PID="$(managed_daemon_pid)" || return 1
+    echo "$PID" > "$PIDFILE"
+    return 0
 }
 
 official_tailscale_vpn_active() {
@@ -86,6 +107,12 @@ stop_daemon() {
 start_daemon() {
     if pid_is_ours; then
         return 0
+    fi
+
+    if pidof tailscaled >/dev/null 2>&1 || ip link show tailscale0 >/dev/null 2>&1; then
+        echo "$(date): refusing to start: another tailscaled or tailscale0 already exists" \
+            >> "$LOGFILE"
+        return 1
     fi
 
     [ -x "$MODDIR/bin/tailscaled" ] || return 1
